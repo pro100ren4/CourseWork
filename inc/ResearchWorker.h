@@ -28,4 +28,8 @@ void SetDurationOfWorkOnTheTopic(ResearchWorker* const researchWorker, unsigned 
 
 void SetSalary(ResearchWorker* const researchWorker, double salary);
 
+ResearchWorker* CreateResearchWorker( unsigned long departmentNumber, unsigned long personnelNumber, unsigned long jobCode, char surname[], unsigned int themeNumber, unsigned int durationOfWorkOnTheTopi, double salary);
+
+ResearchWorker* CreateResearchWorkerFromConsole();
+
 #endif //_RESEARCHWORKER_H_

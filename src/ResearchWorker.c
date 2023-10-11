@@ -1,4 +1,5 @@
 #include "../inc/ResearchWorker.h"
+#include <stdlib.h>
 
 typedef struct ResearchWorker
 {
@@ -51,4 +52,27 @@ void SetDurationOfWorkOnTheTopic(ResearchWorker* const researchWorker, unsigned 
 void SetSalary(ResearchWorker* const researchWorker, double salary)
 {
     researchWorker->salary = salary;
+}
+
+ResearchWorker* CreateResearchWorker( unsigned long departmentNumber, unsigned long personnelNumber, unsigned long jobCode, char surname[], unsigned int themeNumber, unsigned int durationOfWorkOnTheTopi, double salary)
+{
+    ResearchWorker* researchWorker = (ResearchWorker*)malloc(sizeof(ResearchWorker));
+    SetDepartmentNumber(researchWorker, departmentNumber);
+    SetPersonnelNumber(researchWorker, personnelNumber);
+    SetJobCode(researchWorker, jobCode);
+    SetSurname(researchWorker, surname);
+    SetThemeNumber(researchWorker, themeNumber);
+    SetDurationOfWorkOnTheTopic(researchWorker, durationOfWorkOnTheTopi);
+    SetSalary(researchWorker, salary);
+    return researchWorker;
+}
+
+ResearchWorker* CreateResearchWorkerFromConsole()
+{
+    unsigned long departmentNumber, personnelNumber, jobCode;
+    char surname[20];
+    unsigned int themeNumber, durationOfWorkOnTheTopic;
+    double salary;
+
+    
 }
