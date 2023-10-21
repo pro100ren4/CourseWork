@@ -1,5 +1,7 @@
 #include "../inc/ResearchWorker.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 typedef struct ResearchWorker
 {
@@ -14,7 +16,12 @@ unsigned long GetDepartmentNumber(ResearchWorker const * const researchWorker){r
 unsigned long GetPersonnelNumber(ResearchWorker const * const researchWorker){return researchWorker->personnelNumber;}
 unsigned long GetJobCode(ResearchWorker const * const researchWorker){return researchWorker->jobCode;}
 
-char* GetSurname(ResearchWorker const * const researchWorker){return researchWorker->surname;}
+char* GetSurname(ResearchWorker const * const researchWorker)
+{
+    char * surname;
+    strncpy(surname, researchWorker->surname, 19);
+    return surname;
+}
 
 unsigned int GetThemeNumber(ResearchWorker const * const researchWorker){return researchWorker->themeNumber;}
 unsigned int GetDurationOfWorkOnTheTopic(ResearchWorker const * const researchWorker){return researchWorker->durationOfWorkOnTheTopic;}
@@ -37,7 +44,7 @@ void SetJobCode(ResearchWorker* const researchWorker, unsigned long jobCode)
 
 void SetSurname(ResearchWorker* const researchWorker, char surname[])
 {
-    //FIXME: Impliment function
+    strncpy(researchWorker->surname, surname, 19);
 }
 
 void SetThemeNumber(ResearchWorker* const researchWorker, unsigned int themeNumber)
@@ -56,7 +63,7 @@ void SetSalary(ResearchWorker* const researchWorker, double salary)
 
 ResearchWorker* CreateResearchWorker( unsigned long departmentNumber, unsigned long personnelNumber, unsigned long jobCode, char surname[], unsigned int themeNumber, unsigned int durationOfWorkOnTheTopi, double salary)
 {
-    ResearchWorker* researchWorker = (ResearchWorker*)malloc(sizeof(ResearchWorker));
+    ResearchWorker* const researchWorker = (ResearchWorker*)malloc(sizeof(ResearchWorker));
     SetDepartmentNumber(researchWorker, departmentNumber);
     SetPersonnelNumber(researchWorker, personnelNumber);
     SetJobCode(researchWorker, jobCode);
@@ -74,5 +81,61 @@ ResearchWorker* CreateResearchWorkerFromConsole()
     unsigned int themeNumber, durationOfWorkOnTheTopic;
     double salary;
 
-    
+    printf("enter department number: ");
+    while(scanf("%d", &departmentNumber)!=1)
+    {
+        rewind(stdin);
+        printf("[error] incorrect input. try again");
+    }
+    rewind(stdin);
+
+    printf("enter personnel number: ");
+    while(scanf("%d", &personnelNumber)!=1)
+    {
+        rewind(stdin);
+        printf("[error] incorrect input. try again");
+    }
+    rewind(stdin);
+
+    printf("enter job code: ");
+    while(scanf("%d", &jobCode)!=1)
+    {
+        rewind(stdin);
+        printf("[error] incorrect input. try again");
+    }
+    rewind(stdin);
+
+    printf("enter surname: ");
+    while(scanf("%19s", &surname)!=1)
+    {
+        rewind(stdin);
+        printf("[error] incorrect input. try again");
+    }
+    rewind(stdin);
+
+    printf("enter theme number: ");
+    while(scanf("%d", &themeNumber)!=1)
+    {
+        rewind(stdin);
+        printf("[error] incorrect input. try again");
+    }
+    rewind(stdin);
+
+    printf("enter duration of work on the topic: ");
+    while(scanf("%d", &durationOfWorkOnTheTopic)!=1)
+    {
+        rewind(stdin);
+        printf("[error] incorrect input. try again");
+    }
+    rewind(stdin);
+
+    printf("enter salary: ");
+    while(scanf("%lf", &salary)!=1)
+    {
+        rewind(stdin);
+        printf("[error] incorrect input. try again");
+    }
+    rewind(stdin);
+
+    return CreateResearchWorker(departmentNumber, personnelNumber, jobCode, surname, themeNumber, durationOfWorkOnTheTopic, 100.0);
 }
