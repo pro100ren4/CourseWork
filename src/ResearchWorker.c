@@ -12,31 +12,50 @@ typedef struct ResearchWorker
 } ResearchWorker;
 
 //GETER
-unsigned long GetDepartmentNumber(ResearchWorker const * const researchWorker){return researchWorker->departmentNumber;}
-unsigned long GetPersonnelNumber(ResearchWorker const * const researchWorker){return researchWorker->personnelNumber;}
-unsigned long GetJobCode(ResearchWorker const * const researchWorker){return researchWorker->jobCode;}
+unsigned long GetDepartmentNumber(ResearchWorker const * const researchWorker) {
+    return researchWorker->departmentNumber;
+}
+
+unsigned long GetPersonnelNumber(ResearchWorker const * const researchWorker) {
+    return researchWorker->personnelNumber;
+}
+
+unsigned long GetJobCode(ResearchWorker const * const researchWorker) {
+    return researchWorker->jobCode;
+}
 
 char* GetSurname(ResearchWorker const * const researchWorker)
 {
-    char * surname;
+    char surname[20];
     strncpy(surname, researchWorker->surname, 19);
     return surname;
 }
 
-unsigned int GetThemeNumber(ResearchWorker const * const researchWorker){return researchWorker->themeNumber;}
-unsigned int GetDurationOfWorkOnTheTopic(ResearchWorker const * const researchWorker){return researchWorker->durationOfWorkOnTheTopic;}
+unsigned int GetThemeNumber(ResearchWorker const * const researchWorker) {
+    return researchWorker->themeNumber;
+}
 
-double GetSalary(ResearchWorker const * const researchWorker){return researchWorker->salary;}
+unsigned int GetDurationOfWorkOnTheTopic(ResearchWorker const * const researchWorker) {
+    return researchWorker->durationOfWorkOnTheTopic;
+}
+
+double GetSalary(ResearchWorker const * const researchWorker) {
+    return researchWorker->salary;
+}
 
 //SETER
-void SetDepartmentNumber(ResearchWorker* const researchWorker, unsigned long departmentNumber)
+void SetDepartmentNumber(ResearchWorker* const researchWorker, 
+                         unsigned long departmentNumber)
 {
     researchWorker->departmentNumber = departmentNumber;
 }
-void SetPersonnelNumber(ResearchWorker* const researchWorker, unsigned long personnelNumber)
+
+void SetPersonnelNumber(ResearchWorker* const researchWorker, 
+                        unsigned long personnelNumber)
 {
     researchWorker->personnelNumber = personnelNumber;
 }
+
 void SetJobCode(ResearchWorker* const researchWorker, unsigned long jobCode)
 {
     researchWorker->jobCode = jobCode;
@@ -44,6 +63,7 @@ void SetJobCode(ResearchWorker* const researchWorker, unsigned long jobCode)
 
 void SetSurname(ResearchWorker* const researchWorker, char surname[])
 {
+    //FIXME: impliment verification of surname
     strncpy(researchWorker->surname, surname, 19);
 }
 
@@ -51,7 +71,9 @@ void SetThemeNumber(ResearchWorker* const researchWorker, unsigned int themeNumb
 {
     researchWorker->themeNumber = themeNumber;
 }
-void SetDurationOfWorkOnTheTopic(ResearchWorker* const researchWorker, unsigned int durationOfWorkOnTheTopic)
+
+void SetDurationOfWorkOnTheTopic(ResearchWorker* const researchWorker, 
+                                 unsigned int durationOfWorkOnTheTopic)
 {
     researchWorker->durationOfWorkOnTheTopic = durationOfWorkOnTheTopic;
 }
@@ -61,7 +83,13 @@ void SetSalary(ResearchWorker* const researchWorker, double salary)
     researchWorker->salary = salary;
 }
 
-ResearchWorker* CreateResearchWorker( unsigned long departmentNumber, unsigned long personnelNumber, unsigned long jobCode, char surname[], unsigned int themeNumber, unsigned int durationOfWorkOnTheTopi, double salary)
+ResearchWorker* CreateResearchWorker( unsigned long departmentNumber, 
+                                      unsigned long personnelNumber, 
+                                      unsigned long jobCode, 
+                                      char surname[], 
+                                      unsigned int themeNumber,
+                                      unsigned int durationOfWorkOnTheTopi, 
+                                      double salary)
 {
     ResearchWorker* const researchWorker = (ResearchWorker*)malloc(sizeof(ResearchWorker));
     SetDepartmentNumber(researchWorker, departmentNumber);
@@ -137,5 +165,11 @@ ResearchWorker* CreateResearchWorkerFromConsole()
     }
     rewind(stdin);
 
-    return CreateResearchWorker(departmentNumber, personnelNumber, jobCode, surname, themeNumber, durationOfWorkOnTheTopic, 100.0);
+    return CreateResearchWorker(departmentNumber, 
+                                personnelNumber, 
+                                jobCode, 
+                                surname, 
+                                themeNumber, 
+                                durationOfWorkOnTheTopic, 
+                                100.0);
 }

@@ -19,7 +19,9 @@
 - [ ] Запись списка в файл
 - [ ] Чтение списка из файла
 - [ ] Вывод списка на дисплей
+- [ ] Редактирование элемента списка
 
 ## TODO:
-- [ ] Linked list func prototypes
-- [ ] Impliment function of setting worker surname
+- [ ] LinkedList.h:12 Исправить прототипы функций
+- [ ] ReseatchWorker.c:27 Исправить функцию получения фамилии
+- [ ] main.c:9 Добавить запуск тестов

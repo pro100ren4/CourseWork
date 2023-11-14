@@ -1,10 +1,14 @@
 #include <stdio.h>
-#include "../inc/ResearchWorker.h"
+#include "../inc/LinkedList.h"
+
+#define DEBUG
 
 int main(int argc, char const *argv[])
 {
-    ResearchWorker* researchWorker = CreateResearchWorkerFromConsole();
-    char* surname = GetSurname(researchWorker);
-    surname[0] = 'B';
+#ifdef DEBUG
+    system("");//TODO: Call tests
+#endif
+    LinkedList *head = CreateList(5);
+    DeleteList(head);
     return 0;
 }

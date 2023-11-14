@@ -1,6 +1,8 @@
 #ifndef _RESEARCHWORKER_H_
 #define _RESEARCHWORKER_H_
 
+#define DEBUG
+
 typedef struct ResearchWorker ResearchWorker;
 
 
