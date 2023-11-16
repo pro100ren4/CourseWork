@@ -119,11 +119,31 @@ int main(int argc, char const *argv[])
     cursor_to_xy(10,20);
     printf("PAUSE (Press [Enter])\n");
     system(PAUSE);
-    
-    printf("This screen must be cleared after 2 sec...\n");
-    printf("TEST END: Bye-bye\n");
-    wait(2);
+
     clrscr();
     home();
 
+    test_begin("MyTest"); 
+
+    test_asrt(5, 5);
+    test_asrt(5, 4);
+
+    test_expt(5 == 5, "5 == 5");
+    test_expt(5 == 4, "5 == 4");
+    
+    test_end();
+
+    test_begin("MyTest2");
+    test_end();
+
+
+    printf("PAUSE (Press [Enter])\n");
+    system(PAUSE);
+    printf("This screen must be cleared after 5 sec...\n");
+    printf("TEST END: Bye-bye\n");
+    wait(5);
+    clrscr();
+    home();
+
+    return 0;
 }
