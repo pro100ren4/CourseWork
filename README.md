@@ -5,6 +5,9 @@
 количество сотрудников, занятых в каждой теме, а также фонд заработной платы
 по каждой теме.** Результаты напечатать в виде соответствующей таблицы.
 
+## Notes:
+- Добавить шутку про сокращение R.I.P.(Research Institute Programm)
+
 ## Методы Работника НИИ:
 - [+] Геттеры 
 - [+] Сеттеры  
@@ -43,3 +46,5 @@
 1. https://habr.com/ru/articles/325082/
 2. https://linuxdoc.ru/console_codes.html
 3. https://misc.flogisoft.com/bash/tip_colors_and_formatting
+4. https://xakep.ru/2022/02/15/terminal-anatomy/
+5. https://www.bdbd.ru/likbez/samostoyatelnoe-prodvizhenie/tablitsa_simvolov_yunikoda_dlya_saytov/
