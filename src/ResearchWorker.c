@@ -171,5 +171,9 @@ ResearchWorker* CreateResearchWorkerFromConsole()
                                 surname, 
                                 themeNumber, 
                                 durationOfWorkOnTheTopic, 
-                                100.0);
+                                salary);
+}
+
+void DeleteResearchWorker(ResearchWorker *researchWorker) {
+    free(researchWorker);
 }

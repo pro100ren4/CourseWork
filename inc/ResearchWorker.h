@@ -34,6 +34,7 @@ ResearchWorker* CreateResearchWorker( unsigned long departmentNumber, unsigned l
 
 ResearchWorker* CreateResearchWorkerFromConsole();
 
+void DeleteResearchWorker(ResearchWorker *researchWorker);
 
 
 #endif //_RESEARCHWORKER_H_
