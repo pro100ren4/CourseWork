@@ -69,7 +69,8 @@
 #define home() 			printf(ESC "[H") //Move cursor to the indicated row, column (origin at 1,1)
 #define clrscr()		printf(ESC "[2J") //lear the screen, move to (1,1)
 #define cursor_to_xy(x,y)		printf(ESC "[%d;%dH", y, x);
-#define visible_cursor() printf(ESC "[?251");
+#define visible_cursor() printf(ESC "[?25h");
+#define invisible_cursor() printf(ESC "[?25l");
 /** 
  *	Set Display Attribute Mode	<ESC>[{attr1};...;{attrn}m
 */
@@ -84,12 +85,13 @@ static int term_height;
 static int term_width;
 
 
-void initialize_term_xy(void) ;
+void initialize_term_xy(int *x, int *y);
 // {
 //     printf("\x1B[255;255H\x1B[6n");
 //     scanf("\x1B[%d;%dR", &term_width, &term_height);
 //     printf("Width: %d; Height: %d\n", term_width, term_height);//DE:ETE in Release
 // }
+
 
 /*=====TESTS=====*/
 
