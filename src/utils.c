@@ -3,6 +3,7 @@
 void initialize_term_xy(void) {
     printf("\x1B[255;255H\x1B[6n");
     scanf("\x1B[%d;%dR", &term_width, &term_height);
+    home();
     printf("Width: %d; Height: %d\n", term_width, term_height);//DE:ETE in Release
 }
 

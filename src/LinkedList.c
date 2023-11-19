@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "../inc/ResearchWorker.h"
+#include "../inc/utils.h"
 
 typedef struct LinkedList {
     LinkedList *next;
@@ -10,10 +11,11 @@ typedef struct LinkedList {
     ResearchWorker *data;
 } LinkedList;
 
-// FIXME: Do normal function prototypes
 LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker, unsigned long workerPersonalNumber) {
 #ifdef DEBUG
+    set_display_atrib(B_BLUE);
     printf("[%s:%d] Called AddListElement\n", __FUNCTION__, __LINE__);
+    resetcolor();
 #endif
     LinkedList *tmp = head;
     LinkedList *newNode;
@@ -26,7 +28,9 @@ LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker, 
     tmp->next = newNode;
 
 #ifdef DEBUG
-    printf("[%s:%d] AddListElement complete work\n", __FUNCTION__, __LINE__);
+    set_display_atrib(B_BLUE);
+    printf("[%s:%d] AddListElement return %p\n", __FUNCTION__, __LINE__, head);
+    resetcolor();
 #endif
 
     return head;
@@ -34,7 +38,9 @@ LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker, 
 
 LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumber) {
 #ifdef DEBUG
+    set_display_atrib(B_BLUE);
     printf("[%s:%d] Called DeleteListElement\n", __FUNCTION__, __LINE__);
+    resetcolor();
 #endif
     LinkedList *tmp = head;
     LinkedList *delNode;
@@ -45,15 +51,21 @@ LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumb
     free(delNode);
 
 #ifdef DEBUG
+    set_display_atrib(B_BLUE);
     printf("[%s:%d] DeleteListElement complete work\n", __FUNCTION__, __LINE__);
+    resetcolor();
 #endif
 }
 
-LinkedList *CorrectListElement(LinkedList *head, unsigned long workerPersonalNumber);
+LinkedList *CorrectListElement(LinkedList *head, unsigned long workerPersonalNumber) {
+    
+}
 
 LinkedList *CreateList(unsigned int length) {
 #ifdef DEBUG
+    set_display_atrib(B_BLUE);
     printf("[%s:%d] Called CreateList\n", __FUNCTION__, __LINE__);
+    resetcolor();
 #endif
     LinkedList *head = NULL;
     LinkedList *curr = NULL;
@@ -74,7 +86,9 @@ LinkedList *CreateList(unsigned int length) {
         }
     }
 #ifdef DEBUG
-    printf("[%s:%d] CreateList complete work\n", __FUNCTION__, __LINE__);
+    set_display_atrib(B_BLUE);
+    printf("[%s:%d] CreateList return %p\n", __FUNCTION__, __LINE__, head);
+    resetcolor();
 #endif
 
     return head;
@@ -82,7 +96,9 @@ LinkedList *CreateList(unsigned int length) {
 
 void DeleteList(LinkedList *head) {
 #ifdef DEBUG
+    set_display_atrib(B_BLUE);
     printf("[%s:%d] Called DeleteList\n", __FUNCTION__, __LINE__);
+    resetcolor();
 #endif
     while (head->next != NULL) {
         LinkedList *curr = head;
@@ -90,7 +106,9 @@ void DeleteList(LinkedList *head) {
         free(curr);
     }
 #ifdef DEBUG
+    set_display_atrib(B_BLUE);
     printf("[%s:%d] DeleteList complete work\n", __FUNCTION__, __LINE__);
+    resetcolor();
 #endif
 }
 

@@ -61,10 +61,10 @@
 #define B_CYAN		46
 #define B_WHITE		47
 
-//Terminal controll
 /*!
+ * =====Terminal controll=====
  * Используйте while (1) если не хотите, чтоыб ари каждом использовании функции
- cursor_to_xy() экран очищался
+ * cursor_to_xy() экран очищался
 */ 
 #define home() 			printf(ESC "[H") //Move cursor to the indicated row, column (origin at 1,1)
 #define clrscr()		printf(ESC "[2J") //lear the screen, move to (1,1)
@@ -78,7 +78,7 @@
 
 /*!
  * USAGE:
- * Only read, do not write anything int this
+ * Only read, do not write anything into this
 */
 static int term_height;
 static int term_width;
