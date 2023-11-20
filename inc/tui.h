@@ -33,4 +33,9 @@ void initialize_term_xy(int *x, int *y);
 //     printf("Width: %d; Height: %d\n", term_width, term_height);//DE:ETE in Release
 // }s
 
+
+void draw_correct_form(int width, int height);
+void draw_table_form(int width, int height);
+void draw_menu_form(int width, int height);
+void draw_help_form(int width, int height);
 #endif //_TUI_H_
