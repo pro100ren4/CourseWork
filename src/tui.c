@@ -6,6 +6,9 @@
  * Need to type [Enter] when use
 */
 void initialize_term_xy(int *x, int *y) {
+#ifdef _WIN32
+    system("chcp 65001 > nul");
+#endif
     printf("\x1B[255;255H\x1B[6n");
     scanf("\x1B[%d;%dR", &term_height, &term_width);
     clrscr();
