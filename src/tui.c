@@ -19,7 +19,7 @@ void initialize_term_xy(int *x, int *y) {
 }
 
 // Use in cycle
-void draw_correct_form(int width, int height) {
+void draw_correct_form(int width, int height, int selected) {
     int x = (width - 48)/2;
     int y = 4;
     char *CORRECT_FORM[] = {
@@ -35,8 +35,14 @@ void draw_correct_form(int width, int height) {
         "└──────────────────────────────────────────────┘"  
     };
     for (int i = 0; i < 10; i++) {
+        if (selected > 0 && selected < 8 && i == selected) {
+            set_display_atrib(REVERSE);
+        }
         cursor_to_xy(x,y + i);
         printf(CORRECT_FORM[i]);
+        if (selected > 0 && selected < 8 && i == selected) {
+            resetcolor();
+        }
     }
 }
 

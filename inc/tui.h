@@ -28,7 +28,7 @@ void menu_process(struct menu_t *menu);
 // int check_main_menu(struct menu_t *menu);
 
 
-void draw_correct_form(int width, int height);
+void draw_correct_form(int width, int height, int selected);
 void draw_table_form(int width, int height);
 void draw_menu_form(int width, int height);
 void draw_help_form(int width, int height);
