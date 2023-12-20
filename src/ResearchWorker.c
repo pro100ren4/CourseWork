@@ -24,9 +24,10 @@ unsigned long GetJobCode(ResearchWorker const * const researchWorker) {
     return researchWorker->jobCode;
 }
 
+// Allocate 20 bytes of memory. Needed to be deallocated 
 char* GetSurname(ResearchWorker const * const researchWorker)
 {
-    char surname[20];
+    char *surname = (char *)malloc(20);
     strncpy(surname, researchWorker->surname, 19);
     return surname;
 }
