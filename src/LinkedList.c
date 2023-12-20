@@ -12,6 +12,31 @@ typedef struct LinkedList {
     ResearchWorker *data;
 } LinkedList;
 
+void SetNext(LinkedList *list, LinkedList *next) {
+    list->next = next;
+}
+
+void SetPrev(LinkedList *list, LinkedList *prev) {
+    list->prev = prev;
+}
+
+void SetData(LinkedList *list, ResearchWorker* data) {
+    list->data = data;
+}
+
+
+LinkedList *GetNext(LinkedList *list) {
+    return list->next;
+}
+
+LinkedList *GetPrev(LinkedList *list) {
+    return list->prev;
+}
+
+ResearchWorker *GetData(LinkedList *list) {
+    return list->data;
+}
+
 LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker, unsigned long workerPersonalNumber) {
 #ifdef DEBUG
     message("Called AddListElement");
