@@ -1,6 +1,8 @@
 #ifndef _TUI_H_
 #define _TUI_H_
 
+#include "LinkedList.h"
+
 #define menu_line_size 32
 
 void initialize_term_xy(int *x, int *y);
@@ -33,4 +35,6 @@ void draw_help_form(int width, int height);
 
 void set_keypress(void);
 void reset_keypress(void);
+
+LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int selected, int page);
 #endif //_TUI_H_
