@@ -12,6 +12,8 @@ typedef struct LinkedList {
     ResearchWorker *data;
 } LinkedList;
 
+const int LinkedListSize = sizeof(LinkedList);
+
 void SetNext(LinkedList *list, LinkedList *next) {
     list->next = next;
 }
@@ -37,15 +39,42 @@ ResearchWorker *GetData(LinkedList *list) {
     return list->data;
 }
 
-LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker, unsigned long workerPersonalNumber) {
+LinkedList *AddListElementByPersonalNumber(LinkedList *head, 
+                                           ResearchWorker *newResearchWorker, 
+                                           unsigned long workerPersonalNumber) {
+    LinkedList *tmp = head;
+    LinkedList *newNode = (LinkedList *)malloc(LinkedListSize);
+    newNode->data = newResearchWorker;
+    int success = 0;
+    while(GetPersonnelNumber(tmp->data) != workerPersonalNumber) {
+        if (GetPersonnelNumber(GetData(tmp)) == workerPersonalNumber)
+            success = 1;
+        tmp = tmp->next;
+    }
+
+    newNode->next = tmp->next;
+    newNode->prev = tmp;
+    tmp->next = newNode;
+
+    return (success?head:NULL);
+}
+
+LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker) {
 #ifdef DEBUG
+    home();
     message("Called AddListElement");
 #endif
     LinkedList *tmp = head;
-    LinkedList *newNode;
+    LinkedList *newNode = (LinkedList *)malloc(LinkedListSize);
     newNode->data = newResearchWorker;
-
-    while(GetPersonnelNumber(tmp->data) != workerPersonalNumber) tmp = tmp->next;
+    if (!head) {
+        home();
+        warning("List empty!");
+        newNode->next = NULL;
+        newNode->prev = NULL;
+        newNode->data = newResearchWorker;
+        return newNode;
+    }
 
     newNode->next = tmp->next;
     newNode->prev = tmp;
@@ -60,14 +89,18 @@ LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker, 
 
 LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumber) {
 #ifdef DEBUG
+    home();
     message("Called DeleteListElement");
 #endif
     LinkedList *tmp = head;
     LinkedList *delNode;
 
-    while(GetPersonnelNumber(tmp->data) != workerPersonalNumber) tmp = tmp->next;
-    delNode = tmp->next;
-    tmp->next = tmp->next->next;
+    while(GetPersonnelNumber(tmp->data) != workerPersonalNumber) 
+        tmp = tmp->next;
+
+    delNode = tmp;
+    tmp->next->prev = tmp->prev;  
+    tmp->prev->next = tmp->next;
     free(delNode);
 
 #ifdef DEBUG
@@ -75,12 +108,9 @@ LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumb
 #endif
 }
 
-LinkedList *CorrectListElement(LinkedList *head, unsigned long workerPersonalNumber) {
-    
-}
-
 LinkedList *CreateList(unsigned int length) {
 #ifdef DEBUG
+    home();
     message("Called CreateList");
 #endif
     LinkedList *head = NULL;
@@ -110,6 +140,7 @@ LinkedList *CreateList(unsigned int length) {
 
 void DeleteList(LinkedList *head) {
 #ifdef DEBUG
+    home();
     message("Called DeleteList");
 #endif
     while (head->next != NULL) {
@@ -122,7 +153,74 @@ void DeleteList(LinkedList *head) {
 #endif
 }
 
-LinkedList *ReadListFromFile(FILE *file);
-int WriteListToFile(FILE *file, LinkedList *head);
+LinkedList *ReadListFromFile(FILE *file, LinkedList *head) {
+#ifdef DEBUG
+    home();
+    message("ReadListFromFile was called");
+#endif
 
-void PrintList(LinkedList *head);
+    if(!file) {
+        home();
+        error("Can't read file");
+        return NULL;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long file_length = ftell(file)/ResearchWorkerSize;
+    LinkedList* curr = NULL;
+    ResearchWorker *tmp = (ResearchWorker *)malloc(ResearchWorkerSize);
+    rewind(file);
+    for(int i = 0;i < file_length; i++)
+    {
+        LinkedList* node = (LinkedList*)malloc(LinkedListSize);
+        fread(&tmp, ResearchWorkerSize, 1, file);
+        node->data = tmp;
+        node->next = NULL;
+        node->prev = NULL;
+
+        if(head == NULL)
+        {
+            head = node;
+            curr = node;
+        }
+        else
+        {
+            curr->next = node;
+            node->prev = curr;
+            curr = node;
+        }
+    }
+#ifdef DEBUG
+    message("ReadListFromFile completed");
+#endif
+    return head;
+}
+
+LinkedList *ReadListFromFilePath(char *path, char *mode, LinkedList *head) {
+    FILE *file = fopen(path, mode);
+    if (!file) { 
+        error("Can't open file");
+    }
+    
+    head = ReadListFromFile(file, head);
+    fclose(file);
+    return head;
+}
+
+int WriteListToFile(FILE *file, LinkedList *head) {
+    if(head == NULL)
+    {
+        error("warn<write_file>: The list is empty");
+        return 0;
+    }
+    while(head != NULL)
+    {
+        if(fwrite(&(head->data), ResearchWorkerSize, 1, file)!= 1)
+        {
+            error("error<write_file>: Can't write file");
+            return -1;
+        }
+        head = head->next;
+    }
+    return 0;
+}
