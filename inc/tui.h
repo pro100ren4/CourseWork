@@ -12,11 +12,11 @@ struct menu_t {
     int menu_size;
     int chosen;
     int x, y;
-    int (*menu_callback)(struct menu_t *);
+    int (*menu_callback)(struct menu_t *, LinkedList *);
     struct menu_t *subs;
 };
 
-struct menu_t create_menu(char **menu_text, int menu_size, int (*menu_callback)(struct menu_t *), int x, int y);
+struct menu_t create_menu(char **menu_text, int menu_size, int (*menu_callback)(struct menu_t *, LinkedList *), int x, int y);
 void delete_menu(struct menu_t *menu);
 
 void add_menu_sub(struct menu_t *main_menu, struct menu_t *sub_menu, int position);
@@ -24,7 +24,7 @@ void add_menu_sub(struct menu_t *main_menu, struct menu_t *sub_menu, int positio
 void print_menu(struct menu_t *menu);
 // int check_menu_input(struct menu_t *menu);
 // void foo(void);
-void menu_process(struct menu_t *menu);
+void menu_process(struct menu_t *menu, LinkedList *head);
 // int check_main_menu(struct menu_t *menu);
 
 
@@ -37,4 +37,6 @@ void set_keypress(void);
 void reset_keypress(void);
 
 LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int selected, int page);
+ResearchWorker *enter_worker_from_console(void);
+void draw_data_to_correct(int width, int height, LinkedList *list);
 #endif //_TUI_H_

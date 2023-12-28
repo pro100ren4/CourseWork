@@ -11,6 +11,8 @@ typedef struct ResearchWorker
     double salary;
 } ResearchWorker;
 
+const int ResearchWorkerSize = sizeof(ResearchWorker);
+
 //GETER
 unsigned long GetDepartmentNumber(ResearchWorker const * const researchWorker) {
     return researchWorker->departmentNumber;

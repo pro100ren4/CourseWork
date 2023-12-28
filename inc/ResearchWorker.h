@@ -4,7 +4,7 @@
 #define DEBUG
 
 typedef struct ResearchWorker ResearchWorker;
-
+extern const int ResearchWorkerSize;
 
 //GETER
 unsigned long GetDepartmentNumber(ResearchWorker const * const researchWorker);

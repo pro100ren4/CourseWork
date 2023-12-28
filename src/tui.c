@@ -3,6 +3,7 @@
 #include <termios.h>
 #include <stdlib.h>
 
+#include "../inc/LinkedList.h"
 #include "../inc/ResearchWorker.h"
 #include "../inc/utils.h"
 
@@ -49,25 +50,56 @@ void draw_correct_form(int width, int height, int selected) {
     }
 }
 
+void draw_data_to_correct(int width, int height, LinkedList *list) {
+    invisible_cursor();
+    set_keypress();
 
-// ┌─────┬────────────────────┬────────┬──────────┬────────┬────┬───────────┐1
-// │PN   │SURNAME             │DN      │SALARY    │THEME   │DOF │JC         │2
-// ├─────┴────────────────────┴────────┴──────────┴────────┴────┴───────────┤3
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│3
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│4
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│6
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│7
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│5
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│8
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│9
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│0
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│1
-// │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│2
-// ├────────────────────────────────────────────────────────────────────────┤4
-// │MORE ABOUT FIELD                                                        │5
-// └────────────────────────────────────────────────────────────────────────┘6
-//  KEYS: [h]help; [x]exit; [k]up; [j]down; [c]correct; [s]sort              7 
+    int x = (width - 48)/2;
+    int y = 4;
+    cursor_to_xy(x+17, y+1);
+    printf("%d", GetPersonnelNumber(GetData(list)));
 
+    cursor_to_xy(x+9, y+2);
+    printf("%s", GetSurname(GetData(list)));
+
+    cursor_to_xy(x+19, y+3);
+    printf("%d", GetDepartmentNumber(GetData(list)));
+
+    cursor_to_xy(x+8, y+4);
+    printf("%.3f", GetSalary(GetData(list)));
+
+    cursor_to_xy(x+7, y+5);
+    printf("%d", GetThemeNumber(GetData(list)));
+
+    cursor_to_xy(x+31, y+6);
+    printf("%d", GetDurationOfWorkOnTheTopic(GetData(list)));
+
+    cursor_to_xy(x+9, y+7);
+    printf("%d", GetJobCode(GetData(list)));
+
+    reset_keypress();
+    visible_cursor();
+}
+
+/*
+ ┌─────┬────────────────────┬────────┬──────────┬────────┬────┬───────────┐1
+ │PN   │SURNAME             │DN      │SALARY    │THEME   │DOF │JC         │2
+ ├─────┴────────────────────┴────────┴──────────┴────────┴────┴───────────┤3
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│3
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│4
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│6
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│7
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│5
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│8
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│9
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│0
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│1
+ │12345 ABCDEFGHIJKLMNOPQRST 12345678 1234567.89 12345678 1234 12345678901│2
+ ├────────────────────────────────────────────────────────────────────────┤4
+ │MORE ABOUT FIELD                                                        │5
+ └────────────────────────────────────────────────────────────────────────┘6
+  KEYS: [h]help; [x]exit; [k]up; [j]down; [c]correct; [s]sort              7 
+*/
 void draw_table_form(int width, int height) {
     clrscr();
     home();
@@ -345,7 +377,7 @@ void print_menu(struct menu_t *menu) {
 }
 
 
-void menu_process(struct menu_t *menu) {
+void menu_process(struct menu_t *menu, LinkedList *head) {
     
     char act;
     menu->chosen = -1;
@@ -359,7 +391,7 @@ void menu_process(struct menu_t *menu) {
             menu->chosen--;
         } else if (act == 10) {
             //ENTER
-            menu->menu_callback(menu);
+            menu->menu_callback(menu, head);
         } else if (act == 27) {
             //ESC
             return;
@@ -379,7 +411,7 @@ void menu_process(struct menu_t *menu) {
 }
 
 
-struct menu_t create_menu(char **menu_text, int menu_size, int (*menu_callback)(struct menu_t *), int x, int y) {
+struct menu_t create_menu(char **menu_text, int menu_size, int (*menu_callback)(struct menu_t *, LinkedList *), int x, int y) {
     struct menu_t menu = {
         .menu_text = menu_text, 
         .menu_size = menu_size,
@@ -401,7 +433,7 @@ void add_menu_sub(struct menu_t *main_menu, struct menu_t *sub_menu, int positio
     main_menu->subs[position] = *sub_menu;
 }
 
-
+static int page = 0;
 
 LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int selected, int page) {
     int wide = (width - 74)/7;
@@ -410,7 +442,7 @@ LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int 
 
     for(int k = 0; k < page*rows; k++) i = GetNext(i); 
 
-    selected = (selected > rows ? selected%rows:selected);
+    selected = (selected >= rows ? selected%rows:selected);
     cursor_to_xy(4, 2);
     int j = 0;
     for(; i != NULL && j < rows; i = GetNext(i), j++) {
@@ -435,3 +467,59 @@ LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int 
     printf("PAGE:%-3d", page+1);
     return res;
 }
+
+void draw_input_form(int width, int height, int selected) {
+    int x = (width - 48)/2;
+    int y = 4;
+    char *CORRECT_FORM[] = {
+        "┌─INPUT────────────────────────────────────────┐",  
+        "│Personal number                               │", 
+        "│Surname                                       │", 
+        "│Department number                             │", 
+        "│Salary                                        │", 
+        "│Theme                                         │", 
+        "│Duration of work on the theme                 │", 
+        "│Job code                                      │", 
+        "│     Confim[Y]                  Cancel[N]     │", 
+        "└──────────────────────────────────────────────┘"  
+    };
+    for (int i = 0; i < 10; i++) {
+        if (selected > 0 && selected < 8 && i == selected) {
+            set_display_atrib(REVERSE);
+        }
+        cursor_to_xy(x,y + i);
+        printf(CORRECT_FORM[i]);
+        if (selected > 0 && selected < 8 && i == selected) {
+            resetcolor();
+        }
+    }
+}
+
+
+// ResearchWorker *enter_worker_from_console(int width, int height) {
+//     set_keypress();
+//     invisible_cursor();
+//     ResearchWorker *new = (ResearchWorker *)malloc(ResearchWorkerSize);
+//     unsigned long departmentNumber, personnelNumber, jobCode;
+//     char surname[20];
+//     unsigned int themeNumber, durationOfWorkOnTheTopic;
+//     double salary;
+
+//     char act;
+//     while (act != 27)
+//     {
+//         draw_input_form(width, height, 0);
+//         act = getchar();
+//         switch (act)
+//         {
+//         case 10:
+//             cursor_to_xy(1, 1);
+//             scanf("%d", personnelNumber);
+//             break;
+        
+//         default:
+//             break;
+//         }
+//     }
+    
+// }
