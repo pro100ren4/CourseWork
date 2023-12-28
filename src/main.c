@@ -8,12 +8,16 @@
 
 #define DEBUG
 
-static int height, width;
-LinkedList *head;
+int height, width;
+// static LinkedList *head;
 
-void exit_programm(int);
+void terminate_programm(int, LinkedList *);
 void table_process(int, int, LinkedList *);
 void help_process(int width, int height);
+void read_dat_list_process(int width, int height);
+void read_txt_list_process(int width, int height);
+void read_con_list_process(int width, int height);
+LinkedList *console_input_process();
 
 #define main_menu_size 5
 static char *main_menu_text[menu_line_size] = {
@@ -44,15 +48,15 @@ void foo(void) {
 }
 
 
-int callback_main(struct menu_t *menu) {
+int callback_main(struct menu_t *menu, LinkedList *head) {
     switch (menu->chosen)
     {
     case 0:
-        menu_process(&(menu->subs[0]));
+        menu_process(&(menu->subs[0]), head);
         break;
 
     case 1:
-        menu_process(&(menu->subs[1]));
+        menu_process(&(menu->subs[1]), head);
         break;
 
     case 2:
@@ -64,7 +68,7 @@ int callback_main(struct menu_t *menu) {
         break;
 
     case 4:
-        exit_programm(0);
+        terminate_programm(0, head);
         break;
 
     default:
@@ -72,19 +76,19 @@ int callback_main(struct menu_t *menu) {
     }
 }
 
-int callback_input(struct menu_t *menu) {
+int callback_input(struct menu_t *menu, LinkedList *head) {
     switch (menu->chosen)
     {
     case 0:
-        foo();
+        foo();//read_con_list_process(width, height);
         break;
 
     case 1:
-        foo();
+        foo();//read_txt_list_process(width, height);
         break;
 
     case 2:
-        foo();
+        foo();//read_dat_list_process(width, height);
         break;
 
     default:
@@ -92,7 +96,7 @@ int callback_input(struct menu_t *menu) {
     } 
 }
 
-int callback_output(struct menu_t *menu) {
+int callback_output(struct menu_t *menu, LinkedList *head) {
     switch (menu->chosen)
     {
     case 0:
@@ -117,12 +121,13 @@ int main(int argc, char const *argv[])
 #ifdef DEBUG
     //system("./test_utils");//TODO: Call tests
 #endif
+    LinkedList *head;
+
     set_keypress();
     initialize_term_xy(&height, &width);
     clrscr();
     home();
 
-    visible_cursor();
 
     reset_keypress();
     head = CreateList(5);
@@ -138,6 +143,8 @@ int main(int argc, char const *argv[])
         return 1;
     }
 
+
+    //FIXME: Проверить на корректность памяти
     struct menu_t main_menu = create_menu(main_menu_text, 
                                           main_menu_size, 
                                           callback_main, 
@@ -159,13 +166,13 @@ int main(int argc, char const *argv[])
     add_menu_sub(&main_menu, &input_menu, 0);
     add_menu_sub(&main_menu, &output_menu, 1);
 
+    //Основной цикл
     clrscr();
     draw_menu_form(width, height);
-    menu_process(&main_menu);
+    menu_process(&main_menu, head);
 
 
-
-
+    //Завершение программы
     reset_keypress();
     visible_cursor();
 
@@ -179,8 +186,13 @@ int main(int argc, char const *argv[])
 }
 
 void correct_process(LinkedList *list) {
+    set_keypress();
+    invisible_cursor();
+
     int sel_field = 0;
     char act;
+
+    //Кешируем параметры list
     unsigned long departmentNumber = GetDepartmentNumber(GetData(list));
     unsigned long personnelNumber = GetPersonnelNumber(GetData(list));
     unsigned long jobCode =GetJobCode(GetData(list));
@@ -188,8 +200,10 @@ void correct_process(LinkedList *list) {
     unsigned int themeNumber = GetThemeNumber(GetData(list)); 
     unsigned int  durationOfWorkOnTheTopic = GetDurationOfWorkOnTheTopic(GetData(list));
     double salary = GetSalary(GetData(list));
+
     while (act != 27) {
         draw_correct_form(width, height, sel_field); 
+        draw_data_to_correct(width, height, list);
         visible_cursor();
         act = getchar();
         switch (act)
@@ -205,25 +219,25 @@ void correct_process(LinkedList *list) {
         case 99:
             reset_keypress();
             if (sel_field == 1) {
-                cursor_to_xy((width - 48)/2 + 16, 5);
+                cursor_to_xy((width - 48)/2 + 17, 5);
                 scanf("%d", &personnelNumber);
             } else if (sel_field == 2) {
-                cursor_to_xy((width - 48)/2 + 8, 6);
+                cursor_to_xy((width - 48)/2 + 9, 6);
                 scanf("%s", surname);
             } else if (sel_field == 3) {
-                cursor_to_xy((width - 48)/2 + 18, 7);
+                cursor_to_xy((width - 48)/2 + 19, 7);
                 scanf("%d", &departmentNumber);
             } else if (sel_field == 4) {
-                cursor_to_xy((width - 48)/2 + 7, 8);
-                scanf("%f", &salary);
+                cursor_to_xy((width - 48)/2 + 8, 8);
+                scanf("%lf", &salary);
             } else if (sel_field == 5) {
-                cursor_to_xy((width - 48)/2 + 6, 9);
+                cursor_to_xy((width - 48)/2 + 7, 9);
                 scanf("%d", &themeNumber);
             } else if (sel_field == 6) {
-                cursor_to_xy((width - 48)/2 + 30, 10);
+                cursor_to_xy((width - 48)/2 + 31, 10);
                 scanf("%d", &durationOfWorkOnTheTopic);
             } else if (sel_field == 7) {
-                cursor_to_xy((width - 48)/2 + 9, 11);
+                cursor_to_xy((width - 48)/2 + 10, 11);
                 scanf("%d", &jobCode);
             }
             set_keypress();
@@ -231,20 +245,27 @@ void correct_process(LinkedList *list) {
 
         default:
             break;
-        }   
+        }
+        SetPersonnelNumber(GetData(list), personnelNumber);
+        SetSurname(GetData(list), surname);
+        SetDepartmentNumber(GetData(list), departmentNumber);
+        SetSalary(GetData(list), salary);
+        SetThemeNumber(GetData(list), themeNumber);
+        SetDurationOfWorkOnTheTopic(GetData(list), durationOfWorkOnTheTopic);
+        SetJobCode(GetData(list), jobCode);
     }
     invisible_cursor();
-    SetPersonnelNumber(GetData(list), personnelNumber);
-    SetSurname(GetData(list), surname);
-    SetDepartmentNumber(GetData(list), departmentNumber);
-    SetSalary(GetData(list), salary);
-    SetThemeNumber(GetData(list), themeNumber);
-    SetDurationOfWorkOnTheTopic(GetData(list), durationOfWorkOnTheTopic);
-    SetJobCode(GetData(list), jobCode);
     free(surname);
+
+    reset_keypress();
+    visible_cursor();
 }
 
 void table_process(int width, int height, LinkedList* head) {
+    set_keypress();
+    invisible_cursor();
+
+
     int selected = 0;
     char act;
     int page = 0;
@@ -260,20 +281,21 @@ void table_process(int width, int height, LinkedList* head) {
             break;
         
         case 106: //J
-            if (selected > height - 7) {
-                selected = 1;
+            selected++;
+            if (selected >= height - 7) {
+                selected = 0;
                 page++;
             } else {
-                selected++;
+                
             }
             break;
 
         case 107: //K
-            if (selected < 0 && page > 0) {
+            selected--;
+            if (selected <= 1 && page > 0) {
                 selected = height - 7;
                 page--;
             } else {
-                selected--;
             }
             break;
 
@@ -289,9 +311,12 @@ void table_process(int width, int height, LinkedList* head) {
         cursor_to_xy(width-14, height-2);
         printf("SEL:%-2d", selected);
     }
+
+    visible_cursor();
+    reset_keypress();
 }
 
-void exit_programm(int exit_code) {
+void terminate_programm(int exit_code, LinkedList *head) {
     reset_keypress();
     visible_cursor();
 
@@ -301,9 +326,12 @@ void exit_programm(int exit_code) {
     // delete_menu(&output_menu);
     // delete_menu(&input_menu);
     // delete_menu(&main_menu); 
+    exit(exit_code);
 }
 
 void help_process(int width, int height) {
+    set_keypress();
+    invisible_cursor();
     clrscr();
     home();
     char act;
@@ -321,4 +349,6 @@ void help_process(int width, int height) {
             break;
         }
     }
+    visible_cursor();
+    reset_keypress();
 }
