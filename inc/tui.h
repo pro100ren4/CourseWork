@@ -7,6 +7,8 @@
 
 void initialize_term_xy(int *x, int *y);
 
+void flush();
+
 struct menu_t {
     char **menu_text;
     int menu_size;
@@ -37,6 +39,12 @@ void set_keypress(void);
 void reset_keypress(void);
 
 LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int selected, int page);
+void draw_input_form(int width, int height, int selected);
 ResearchWorker *enter_worker_from_console(void);
 void draw_data_to_correct(int width, int height, LinkedList *list);
+void draw_dat_file_read_form(int width, int height);
+void draw_txt_file_read_form(int width, int height);
+void draw_enter_listsize_form(int width, int height);
+
+
 #endif //_TUI_H_

@@ -22,6 +22,13 @@ void initialize_term_xy(int *x, int *y) {
     // system(PAUSE);
 }
 
+void flush() {
+    // reset_keypress();
+    int c;
+    while ((c = getchar()) != EOF && c != '\n');
+    // set_keypress();
+}
+
 // Use in cycle
 void draw_correct_form(int width, int height, int selected) {
     int x = (width - 48)/2;
@@ -35,7 +42,7 @@ void draw_correct_form(int width, int height, int selected) {
         "│Theme                                         │", 
         "│Duration of work on the theme                 │", 
         "│Job code                                      │", 
-        "│     Confim[Y]                  Cancel[N]     │", 
+        "│[Enter]Confim [Esc]Exit [c]Enter data         │", 
         "└──────────────────────────────────────────────┘"  
     };
     for (int i = 0; i < 10; i++) {
@@ -57,7 +64,7 @@ void draw_data_to_correct(int width, int height, LinkedList *list) {
     int x = (width - 48)/2;
     int y = 4;
     cursor_to_xy(x+17, y+1);
-    printf("%d", GetPersonnelNumber(GetData(list)));
+    printf("%d", GetPersonalNumber(GetData(list)));
 
     cursor_to_xy(x+9, y+2);
     printf("%s", GetSurname(GetData(list)));
@@ -225,12 +232,12 @@ void draw_table_form(int width, int height) {
     }
     printf("┘\n");
 
-    printf("%-*s", width, " KEYS: [h] help; [x] exit; [m] menu; [k] up; [j] down; [c] correct");
+    printf("%-*s", width, " KEYS:[h]help [x]exit [k]up [j]down [c]correct [s]sort [/]find");
 
 }
 
 // 123456789012345678901234567890123456789012  42
-// ┌──────────────────MENU──────────────────┐1
+// ┌─MENU───────────────────────────────────┐1
 // │ [1] Read Data from File                │2
 // │ [2] Write Data to File                 │3
 // │ [3] Read Data from Console             │4
@@ -245,6 +252,8 @@ void draw_table_form(int width, int height) {
 void draw_menu_form(int x, int y) {
     clrscr();
     home();
+    invisible_cursor();
+    set_keypress();
 
     //int x = (width - 34)/2, y = (height - 7)/2;
 
@@ -272,6 +281,8 @@ void draw_menu_form(int x, int y) {
         printf("─");
     }
     printf("┘\n");
+    visible_cursor();
+    reset_keypress();
 }
 
 // 123456789012345678901234567890123456789012  42
@@ -438,7 +449,9 @@ static int page = 0;
 LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int selected, int page) {
     int wide = (width - 74)/7;
     int rows = height - 7;
-    LinkedList *res, *i = head;
+    LinkedList *res, *i = head, *sz = head;
+    int size = 0;
+    for (size = 0; sz != NULL; size++)sz = GetNext(sz);
 
     for(int k = 0; k < page*rows; k++) i = GetNext(i); 
 
@@ -447,19 +460,19 @@ LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int 
     int j = 0;
     for(; i != NULL && j < rows; i = GetNext(i), j++) {
         cursor_to_xy(2, 4 + j);
-        //if (GetPersonnelNumber(GetData(i))%rows == selected)
+        //if (GetPersonalNumber(GetData(i))%rows == selected)
         if (j == selected) {
             set_display_atrib(REVERSE);
             res = i; 
         } 
-        printf("%*d ", 5+wide, GetPersonnelNumber(GetData(i)));
+        printf("%*d ", 5+wide, GetPersonalNumber(GetData(i)));
         printf("%*s ", (20+wide+(width - 74)%7), GetSurname(GetData(i)));
         printf("%*d ", 8+wide, GetDepartmentNumber(GetData(i)));
         printf("%*.2f ", 9+wide, GetSalary(GetData(i)));
         printf("%*d ", 8+wide, GetThemeNumber(GetData(i)));
         printf("%*d ", 4+wide, GetDurationOfWorkOnTheTopic(GetData(i)));
         printf("%*d", 11+wide, GetJobCode(GetData(i)));
-        //if (GetPersonnelNumber(GetData(i))%rows == selected)
+        //if (GetPersonalNumber(GetData(i))%rows == selected)
         if (j == selected)
             resetcolor(); 
     } 
@@ -472,7 +485,7 @@ void draw_input_form(int width, int height, int selected) {
     int x = (width - 48)/2;
     int y = 4;
     char *CORRECT_FORM[] = {
-        "┌─INPUT────────────────────────────────────────┐",  
+        "┌─Enter─Research─Worker────────────────────────┐",  
         "│Personal number                               │", 
         "│Surname                                       │", 
         "│Department number                             │", 
@@ -480,7 +493,7 @@ void draw_input_form(int width, int height, int selected) {
         "│Theme                                         │", 
         "│Duration of work on the theme                 │", 
         "│Job code                                      │", 
-        "│     Confim[Y]                  Cancel[N]     │", 
+        "│[Enter]Confirm [Esc]Next                      │", 
         "└──────────────────────────────────────────────┘"  
     };
     for (int i = 0; i < 10; i++) {
@@ -492,6 +505,51 @@ void draw_input_form(int width, int height, int selected) {
         if (selected > 0 && selected < 8 && i == selected) {
             resetcolor();
         }
+    }
+}
+
+void draw_dat_file_read_form(int width, int height) {
+    char *FileNameForm[] = {
+        "┌Enter─Dat─File─name─────────────┐",
+        "│                                │",
+        "└[Enter/Esc]─────────────────────┘",
+        " Name must be <= 32ch!!           "
+    };
+    int x = (width - 34)/2;
+    int y = 4;
+    for(int i = 0; i < 4; i++) {
+        cursor_to_xy(x, y + i);
+        printf("%s", FileNameForm[i]);
+    }
+}
+
+
+void draw_txt_file_read_form(int width, int height) {
+    char *FileNameForm[] = {
+        "┌Enter─Txt─File─name─────────────┐",
+        "│                                │",
+        "└[Enter/Esc]─────────────────────┘",
+        " Name must be <= 32ch!!           "
+    };
+    int x = (width - 34)/2;
+    int y = 4;
+    for(int i = 0; i < 4; i++) {
+        cursor_to_xy(x, y + i);
+        printf("%s", FileNameForm[i]);
+    }
+}
+
+void draw_enter_listsize_form(int width, int height) {
+    char *FileNameForm[] = {
+        "┌Enter─List─Size─────────────────┐",
+        "│                                │",
+        "└[Enter/Esc]─────────────────────┘"
+    };
+    int x = (width - 34)/2;
+    int y = 4;
+    for(int i = 0; i < 3; i++) {
+        cursor_to_xy(x, y + i);
+        printf("%s", FileNameForm[i]);
     }
 }
 
