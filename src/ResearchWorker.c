@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../inc/tui.h"
+#include "../inc/utils.h"
 
 typedef struct ResearchWorker
 {
@@ -18,7 +20,7 @@ unsigned long GetDepartmentNumber(ResearchWorker const * const researchWorker) {
     return researchWorker->departmentNumber;
 }
 
-unsigned long GetPersonnelNumber(ResearchWorker const * const researchWorker) {
+unsigned long GetPersonalNumber(ResearchWorker const * const researchWorker) {
     return researchWorker->personnelNumber;
 }
 
@@ -107,6 +109,11 @@ ResearchWorker* CreateResearchWorker( unsigned long departmentNumber,
 
 ResearchWorker* CreateResearchWorkerFromConsole()
 {
+    home();
+    clrscr();
+    reset_keypress();
+    visible_cursor();
+
     unsigned long departmentNumber, personnelNumber, jobCode;
     char surname[20];
     unsigned int themeNumber, durationOfWorkOnTheTopic;
@@ -115,58 +122,58 @@ ResearchWorker* CreateResearchWorkerFromConsole()
     printf("enter department number: ");
     while(scanf("%d", &departmentNumber)!=1)
     {
-        rewind(stdin);
+        flush();
         printf("[error] incorrect input. try again");
     }
-    rewind(stdin);
+    flush();
 
     printf("enter personnel number: ");
     while(scanf("%d", &personnelNumber)!=1)
     {
-        rewind(stdin);
+        flush();
         printf("[error] incorrect input. try again");
     }
-    rewind(stdin);
+    flush();
 
     printf("enter job code: ");
     while(scanf("%d", &jobCode)!=1)
     {
-        rewind(stdin);
+        flush();
         printf("[error] incorrect input. try again");
     }
-    rewind(stdin);
+    flush();
 
     printf("enter surname: ");
     while(scanf("%19s", &surname)!=1)
     {
-        rewind(stdin);
+        flush();
         printf("[error] incorrect input. try again");
     }
-    rewind(stdin);
+    flush();
 
     printf("enter theme number: ");
     while(scanf("%d", &themeNumber)!=1)
     {
-        rewind(stdin);
+        flush();
         printf("[error] incorrect input. try again");
     }
-    rewind(stdin);
+    flush();
 
     printf("enter duration of work on the topic: ");
     while(scanf("%d", &durationOfWorkOnTheTopic)!=1)
     {
-        rewind(stdin);
+        flush();
         printf("[error] incorrect input. try again");
     }
-    rewind(stdin);
+    flush();
 
     printf("enter salary: ");
     while(scanf("%lf", &salary)!=1)
     {
-        rewind(stdin);
+        flush();
         printf("[error] incorrect input. try again");
     }
-    rewind(stdin);
+    flush();
 
     return CreateResearchWorker(departmentNumber, 
                                 personnelNumber, 

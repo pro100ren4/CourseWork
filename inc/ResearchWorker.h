@@ -8,7 +8,7 @@ extern const int ResearchWorkerSize;
 
 //GETER
 unsigned long GetDepartmentNumber(ResearchWorker const * const researchWorker);
-unsigned long GetPersonnelNumber(ResearchWorker const * const researchWorker);
+unsigned long GetPersonalNumber(ResearchWorker const * const researchWorker);
 unsigned long GetJobCode(ResearchWorker const * const researchWorker);
 
 char* GetSurname(ResearchWorker const * const researchWorker);
