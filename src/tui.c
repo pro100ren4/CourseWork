@@ -50,7 +50,7 @@ void draw_correct_form(int width, int height, int selected) {
             set_display_atrib(REVERSE);
         }
         cursor_to_xy(x,y + i);
-        printf(CORRECT_FORM[i]);
+        printf("%s", CORRECT_FORM[i]);
         if (selected > 0 && selected < 8 && i == selected) {
             resetcolor();
         }
@@ -64,13 +64,13 @@ void draw_data_to_correct(int width, int height, LinkedList *list) {
     int x = (width - 48)/2;
     int y = 4;
     cursor_to_xy(x+17, y+1);
-    printf("%d", GetPersonalNumber(GetData(list)));
+    printf("%lu", GetPersonalNumber(GetData(list)));
 
     cursor_to_xy(x+9, y+2);
     printf("%s", GetSurname(GetData(list)));
 
     cursor_to_xy(x+19, y+3);
-    printf("%d", GetDepartmentNumber(GetData(list)));
+    printf("%lu", GetDepartmentNumber(GetData(list)));
 
     cursor_to_xy(x+8, y+4);
     printf("%.3f", GetSalary(GetData(list)));
@@ -82,7 +82,7 @@ void draw_data_to_correct(int width, int height, LinkedList *list) {
     printf("%d", GetDurationOfWorkOnTheTopic(GetData(list)));
 
     cursor_to_xy(x+9, y+7);
-    printf("%d", GetJobCode(GetData(list)));
+    printf("%lu", GetJobCode(GetData(list)));
 
     reset_keypress();
     visible_cursor();
@@ -465,13 +465,13 @@ LinkedList* print_linked_list_data(LinkedList *head, int width, int height, int 
             set_display_atrib(REVERSE);
             res = i; 
         } 
-        printf("%*d ", 5+wide, GetPersonalNumber(GetData(i)));
+        printf("%*lu ", 5+wide, GetPersonalNumber(GetData(i)));
         printf("%*s ", (20+wide+(width - 74)%7), GetSurname(GetData(i)));
-        printf("%*d ", 8+wide, GetDepartmentNumber(GetData(i)));
+        printf("%*lu ", 8+wide, GetDepartmentNumber(GetData(i)));
         printf("%*.2f ", 9+wide, GetSalary(GetData(i)));
         printf("%*d ", 8+wide, GetThemeNumber(GetData(i)));
         printf("%*d ", 4+wide, GetDurationOfWorkOnTheTopic(GetData(i)));
-        printf("%*d", 11+wide, GetJobCode(GetData(i)));
+        printf("%*lu", 11+wide, GetJobCode(GetData(i)));
         //if (GetPersonalNumber(GetData(i))%rows == selected)
         if (j == selected)
             resetcolor(); 
@@ -501,7 +501,7 @@ void draw_input_form(int width, int height, int selected) {
             set_display_atrib(REVERSE);
         }
         cursor_to_xy(x,y + i);
-        printf(CORRECT_FORM[i]);
+        printf("%s", CORRECT_FORM[i]);
         if (selected > 0 && selected < 8 && i == selected) {
             resetcolor();
         }

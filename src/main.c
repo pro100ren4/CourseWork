@@ -91,6 +91,7 @@ int callback_main(struct menu_t *menu, LinkedList *head) {
     default:
         break;
     }
+    return 0;
 }
 
 int callback_input(struct menu_t *menu, LinkedList *head) {
@@ -112,6 +113,8 @@ int callback_input(struct menu_t *menu, LinkedList *head) {
     default:
         break;
     } 
+
+    return 0;
 }
 
 int callback_output(struct menu_t *menu, LinkedList *head) {
@@ -132,6 +135,8 @@ int callback_output(struct menu_t *menu, LinkedList *head) {
     default:
         break;
     }  
+
+    return 0;
 }
 
 
@@ -261,13 +266,13 @@ void correct_process(LinkedList *list) {
             reset_keypress();
             if (sel_field == 1) {
                 cursor_to_xy((width - 48)/2 + 17, 5);
-                scanf("%d", &personnelNumber);
+                scanf("%ld", &personnelNumber);
             } else if (sel_field == 2) {
                 cursor_to_xy((width - 48)/2 + 9, 6);
                 scanf("%s", surname);
             } else if (sel_field == 3) {
                 cursor_to_xy((width - 48)/2 + 19, 7);
-                scanf("%d", &departmentNumber);
+                scanf("%ld", &departmentNumber);
             } else if (sel_field == 4) {
                 cursor_to_xy((width - 48)/2 + 8, 8);
                 scanf("%lf", &salary);
@@ -279,7 +284,7 @@ void correct_process(LinkedList *list) {
                 scanf("%d", &durationOfWorkOnTheTopic);
             } else if (sel_field == 7) {
                 cursor_to_xy((width - 48)/2 + 10, 11);
-                scanf("%d", &jobCode);
+                scanf("%ld", &jobCode);
             }
             flush();
             set_keypress();
@@ -315,6 +320,7 @@ void table_process(int width, int height, LinkedList* head) {
     int list_size = 0;
     for (list_size = 0; sz != NULL; list_size++) sz = GetNext(sz);
     int pages = (list_size / (height - 7));
+    int key = 0;
 
     while (act != 120) {
         draw_table_form(width, height);
@@ -359,7 +365,6 @@ void table_process(int width, int height, LinkedList* head) {
             break;
 
         case 47: // /
-            int key = 0;
             reset_keypress();
             scanf("%d", &key);
             flush();
@@ -425,7 +430,7 @@ int atterntion_process(int width, int height, char attention[], size_t att_size)
     clrscr();
     home();
 
-
+    return 0;
 }
 
 void read_dat_list_process(int width, int height, LinkedList **head) {
@@ -563,7 +568,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         visible_cursor();
         reset_keypress();
         cursor_to_xy(x + 18, y + 1);
-        while(scanf("%d", &personnelNumber) != 1) {
+        while(scanf("%ld", &personnelNumber) != 1) {
             home();
             error("Incorrect input. Try agian");
             flush();
@@ -584,7 +589,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         flush();
 
         cursor_to_xy(x + 20, y + 3);
-        while(scanf("%d", &departmentNumber)!= 1) {
+        while(scanf("%ld", &departmentNumber)!= 1) {
             home();
             error("Incorrect input. Try agian");
             flush();
@@ -624,7 +629,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         flush();
 
         cursor_to_xy(x + 11, y + 7);
-        while(scanf("%d", &jobCode) != 1) {
+        while(scanf("%ld", &jobCode) != 1) {
             home();
             error("Incorrect input. Try agian");
             flush();
