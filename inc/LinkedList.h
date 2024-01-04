@@ -30,6 +30,8 @@ LinkedList *ReadListFromFile(FILE *file, LinkedList *head);
 LinkedList *ReadListFromFilePath(char *path, char *mode, LinkedList *head);
 int WriteListToFile(FILE *file, LinkedList *head);
 
-LinkedList *SortListByPersonalSurname(LinkedList *head);
+LinkedList *SortListBySurname(LinkedList *head);
+
+int FindWorkerByPersonalNumber(LinkedList *head, unsigned long key); 
 
 #endif //_LINKEDLIST_LIST_H_

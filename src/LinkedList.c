@@ -1,6 +1,7 @@
 #include "../inc/LinkedList.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "../inc/ResearchWorker.h"
 #include "../inc/utils.h"
@@ -46,8 +47,8 @@ LinkedList *AddListElementByPersonalNumber(LinkedList *head,
     LinkedList *newNode = (LinkedList *)malloc(LinkedListSize);
     newNode->data = newResearchWorker;
     int success = 0;
-    while(GetPersonnelNumber(tmp->data) != workerPersonalNumber) {
-        if (GetPersonnelNumber(GetData(tmp)) == workerPersonalNumber)
+    while(GetPersonalNumber(tmp->data) != workerPersonalNumber) {
+        if (GetPersonalNumber(GetData(tmp)) == workerPersonalNumber)
             success = 1;
         tmp = tmp->next;
     }
@@ -95,7 +96,7 @@ LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumb
     LinkedList *tmp = head;
     LinkedList *delNode;
 
-    while(GetPersonnelNumber(tmp->data) != workerPersonalNumber) 
+    while(GetPersonalNumber(tmp->data) != workerPersonalNumber) 
         tmp = tmp->next;
 
     delNode = tmp;
@@ -143,6 +144,11 @@ void DeleteList(LinkedList *head) {
     home();
     message("Called DeleteList");
 #endif
+    if (!head){
+        home();
+        message("List is empty");
+        return;
+    }
     while (head->next != NULL) {
         LinkedList *curr = head;
         head = head->next;
@@ -208,19 +214,38 @@ LinkedList *ReadListFromFilePath(char *path, char *mode, LinkedList *head) {
 }
 
 int WriteListToFile(FILE *file, LinkedList *head) {
-    if(head == NULL)
-    {
-        error("warn<write_file>: The list is empty");
+    if (head == NULL) {
+        home();
+        error("The list is empty");
         return 0;
     }
-    while(head != NULL)
-    {
-        if(fwrite(&(head->data), ResearchWorkerSize, 1, file)!= 1)
-        {
-            error("error<write_file>: Can't write file");
+
+    while (head != NULL) {
+        if (fwrite(head->data, ResearchWorkerSize, 1, file)!= 1) {
+            home();
+            error("Can't write file");
             return -1;
         }
-        head = head->next;
+        head = GetNext(head);
     }
     return 0;
+}
+
+LinkedList *SortListBySurname(LinkedList *head) {
+    return head;
+}
+
+int FindWorkerByPersonalNumber(LinkedList *head, unsigned long key) {
+    int success = 0;
+    int selected = 0;
+    LinkedList *tmp = head;
+    while (tmp != NULL && GetPersonalNumber(GetData(tmp)) != key) {
+        selected++;
+        tmp = GetNext(tmp);
+    }
+    
+    if (GetPersonalNumber(GetData(tmp)) == key) {
+        success = selected;
+    }
+    return success;
 }
