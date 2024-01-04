@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <termio.h>
+#include <string.h>
 
 #include "../inc/LinkedList.h"
 #include "../inc/utils.h"
 #include "../inc/tui.h"
+#include "../inc/assertimp.h"
 
 #define DEBUG
 
@@ -14,10 +16,19 @@ int height, width;
 void terminate_programm(int, LinkedList *);
 void table_process(int, int, LinkedList *);
 void help_process(int width, int height);
-void read_dat_list_process(int width, int height);
-void read_txt_list_process(int width, int height);
-void read_con_list_process(int width, int height);
+void read_dat_list_process(int width, int height, LinkedList **head);
+void read_txt_list_process(int width, int height, LinkedList **head);
+void read_con_list_process(int width, int height, LinkedList **head);
 LinkedList *console_input_process();
+
+
+
+
+/*
+ *  ######################################
+ *  #             MENU SET UP            #
+ *  ######################################
+*/
 
 #define main_menu_size 5
 static char *main_menu_text[menu_line_size] = {
@@ -42,7 +53,7 @@ static char *output_menu_text[20] = {
 };
 
 void foo(void) {
-    cursor_to_xy(1, height);
+    home();
     printf("Mock func");
     char a = getchar();
 }
@@ -60,6 +71,12 @@ int callback_main(struct menu_t *menu, LinkedList *head) {
         break;
 
     case 2:
+        if (!head) {
+            home();
+            error("list empty");
+            getchar();
+            break;
+        }
         table_process(width, height, head);
         break;
 
@@ -80,15 +97,16 @@ int callback_input(struct menu_t *menu, LinkedList *head) {
     switch (menu->chosen)
     {
     case 0:
-        foo();//read_con_list_process(width, height);
+        read_con_list_process(width, height, &head);
         break;
 
     case 1:
-        foo();//read_txt_list_process(width, height);
+        read_dat_list_process(width, height, &head);
+        
         break;
 
     case 2:
-        foo();//read_dat_list_process(width, height);
+        read_txt_list_process(width, height, &head);
         break;
 
     default:
@@ -116,12 +134,21 @@ int callback_output(struct menu_t *menu, LinkedList *head) {
     }  
 }
 
+
+
+
+/*
+ *  ######################################
+ *  #                MAIN                #
+ *  ######################################
+*/
+
 int main(int argc, char const *argv[])
 {
 #ifdef DEBUG
     //system("./test_utils");//TODO: Call tests
 #endif
-    LinkedList *head;
+    LinkedList *head = NULL;
 
     set_keypress();
     initialize_term_xy(&height, &width);
@@ -130,14 +157,15 @@ int main(int argc, char const *argv[])
 
 
     reset_keypress();
-    head = CreateList(5);
+    // head = CreateList(10);
+    // 
     clrscr();
     set_keypress();
     
     invisible_cursor();
     
     char act;
-    if (height <= 17 && width <= 74) {
+    if (height <= 12 || width <= 74) {
         printf("Plese make your terminal bigger. It's too small\n");
         visible_cursor();
         return 1;
@@ -185,16 +213,25 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
+
+
+
+/*
+ *  ######################################
+ *  #           PROGRAM MODES            #
+ *  ######################################
+*/
+
 void correct_process(LinkedList *list) {
     set_keypress();
     invisible_cursor();
 
-    int sel_field = 0;
+    int sel_field = 1;
     char act;
 
     //Кешируем параметры list
     unsigned long departmentNumber = GetDepartmentNumber(GetData(list));
-    unsigned long personnelNumber = GetPersonnelNumber(GetData(list));
+    unsigned long personnelNumber = GetPersonalNumber(GetData(list));
     unsigned long jobCode =GetJobCode(GetData(list));
     char *surname = GetSurname(GetData(list));
     unsigned int themeNumber = GetThemeNumber(GetData(list)); 
@@ -208,12 +245,16 @@ void correct_process(LinkedList *list) {
         act = getchar();
         switch (act)
         {
-        case 106:
+        case 106: //J
             sel_field++;
+            if (sel_field > 7)
+                sel_field = 7;
             break;
         
-        case 107:
+        case 107://K
             sel_field--;
+            if (sel_field < 1)
+                sel_field = 1;
             break;
         
         case 99:
@@ -240,6 +281,7 @@ void correct_process(LinkedList *list) {
                 cursor_to_xy((width - 48)/2 + 10, 11);
                 scanf("%d", &jobCode);
             }
+            flush();
             set_keypress();
             break;
 
@@ -269,10 +311,16 @@ void table_process(int width, int height, LinkedList* head) {
     int selected = 0;
     char act;
     int page = 0;
-    LinkedList *list;
+    LinkedList *list, *sz = head;
+    int list_size = 0;
+    for (list_size = 0; sz != NULL; list_size++) sz = GetNext(sz);
+    int pages = (list_size / (height - 7));
+
     while (act != 120) {
         draw_table_form(width, height);
         list = print_linked_list_data(head, width, height, selected, page);
+        cursor_to_xy(width-14, height-2);
+        printf("SEL:%-2d", selected);
         cursor_to_xy(2, height-2);
         act = getchar();
         switch (act) {
@@ -282,25 +330,43 @@ void table_process(int width, int height, LinkedList* head) {
         
         case 106: //J
             selected++;
-            if (selected >= height - 7) {
+            if (selected >= height - 7 && page < pages) {
                 selected = 0;
                 page++;
-            } else {
-                
+            } else if (selected >= height - 7 && page >= pages) {
+                selected = height - 7;
+                page = pages;
             }
             break;
 
         case 107: //K
             selected--;
-            if (selected <= 1 && page > 0) {
+            if (selected < 0 && page > 0) {
                 selected = height - 7;
                 page--;
-            } else {
+            } else if (selected < 0 && page <= 0) {
+                selected = 0;
+                page = 0;
             }
             break;
 
         case 99: //C
             correct_process(list);
+            break;
+        
+        case 115: //S
+            head = SortListBySurname(head);
+            break;
+
+        case 47: // /
+            int key = 0;
+            reset_keypress();
+            scanf("%d", &key);
+            flush();
+            key = FindWorkerByPersonalNumber(head, key);
+            selected = (key%(height - 7));
+            page = key/(height-7);
+            set_keypress();
             break;
 
         default:
@@ -308,8 +374,7 @@ void table_process(int width, int height, LinkedList* head) {
             printf("Wrong action");
             break;
         }
-        cursor_to_xy(width-14, height-2);
-        printf("SEL:%-2d", selected);
+        
     }
 
     visible_cursor();
@@ -351,4 +416,246 @@ void help_process(int width, int height) {
     }
     visible_cursor();
     reset_keypress();
+}
+
+
+//FIXME: Impliment
+int atterntion_process(int width, int height, char attention[], size_t att_size) {
+    set_keypress();
+    clrscr();
+    home();
+
+
+}
+
+void read_dat_list_process(int width, int height, LinkedList **head) {
+    set_keypress();
+    invisible_cursor();
+    clrscr();
+    home();
+    char act;
+    char filename[36];
+
+    int x = (width - 34)/2 + 1;
+    int y = 5;
+
+    while (1) {
+        draw_dat_file_read_form(width, height);
+        act = getchar();
+        switch (act)
+        {
+        case 10:
+            cursor_to_xy(x, y);
+            visible_cursor();
+            reset_keypress();
+            scanf("%s", filename);
+            flush();
+            strcat(filename, ".dat");
+            FILE *file = fopen(filename, "rb");
+            if (!file) {
+                home();
+                error("Can't open file");
+                head = NULL;
+                getchar();
+                return;
+            }
+            *head = ReadListFromFile(file, *head);
+            fclose(file);
+            reset_keypress();
+            visible_cursor();
+            return;
+            break;
+        
+        case 27:
+            reset_keypress();
+            visible_cursor();
+            return;
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
+void read_txt_list_process(int width, int height, LinkedList **head) {
+    set_keypress();
+    invisible_cursor();
+    clrscr();
+    home();
+    char act;
+    char filename[36];
+
+    int x = (width - 34)/2 + 1;
+    int y = 5;
+
+    while (1) {
+        draw_txt_file_read_form(width, height);
+        act = getchar();
+        switch (act)
+        {
+        case 10:
+            cursor_to_xy(x, y);
+            visible_cursor();
+            reset_keypress();
+            scanf("%s", filename);
+            flush();
+            strcat(filename, ".txt");
+            FILE *file = fopen(filename, "r");
+            if (!file) {
+                home();
+                error("Can't open file");
+                head = NULL;
+                getchar();
+                return;
+            }
+            *head = ReadListFromFile(file, *head);
+            fclose(file);
+            reset_keypress();
+            visible_cursor();
+            return;
+            break;
+        
+        case 27:
+            reset_keypress();
+            visible_cursor();
+            return;
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
+void read_con_list_process(int width, int height, LinkedList **head) {
+    set_keypress();
+    invisible_cursor();
+    clrscr();
+    home();
+    char act;
+    int listsize = 0;
+
+    // Поля сотрудника нии
+    unsigned long departmentNumber, personnelNumber, jobCode;
+    char surname[20];
+    unsigned int themeNumber, durationOfWorkOnTheTopic;
+    double salary;
+
+    int x = (width - 34)/2;
+    int y = 4;
+
+    draw_enter_listsize_form(width, height);
+    cursor_to_xy(x + 1, y + 1);
+    while(scanf("%d", &listsize) != 1) {
+        home();
+        error("Incorrect input. Try agian");
+        flush();
+        getchar();
+        cursor_to_xy(x + 1, y + 1);
+    }
+    flush();
+
+    x = (width - 48)/2;
+
+    for (int i = 0; i < listsize; i++) {
+        draw_input_form(width, height, 0);
+        visible_cursor();
+        reset_keypress();
+        cursor_to_xy(x + 18, y + 1);
+        while(scanf("%d", &personnelNumber) != 1) {
+            home();
+            error("Incorrect input. Try agian");
+            flush();
+            getchar();
+            cursor_to_xy(x + 18, y + 1);
+        }
+        flush();
+                
+
+        cursor_to_xy(x + 10, y + 2);
+        while(scanf("%s", surname)!= 1) {
+            home();
+            error("Incorrect input. Try agian");
+            flush();
+            getchar();
+            cursor_to_xy(x + 10, y + 2);
+        }
+        flush();
+
+        cursor_to_xy(x + 20, y + 3);
+        while(scanf("%d", &departmentNumber)!= 1) {
+            home();
+            error("Incorrect input. Try agian");
+            flush();
+            getchar();
+            cursor_to_xy(x + 20, y + 3);
+        }
+        flush();
+
+        cursor_to_xy(x + 9, y + 4);
+        while(scanf("%lf", &salary)!= 1) {
+            home();
+            error("Incorrect input. Try agian");
+            flush();
+            getchar();
+            cursor_to_xy(x + 9, y + 4);
+        }
+        flush();
+
+        cursor_to_xy(x + 8, y + 5);
+        while(scanf("%d", &themeNumber)!= 1) {
+            home();
+            error("Incorrect input. Try agian");
+            flush();
+            getchar();
+            cursor_to_xy(x + 8, y + 5);
+        }
+        flush();
+
+        cursor_to_xy(x + 32, y + 6);
+        while(scanf("%d", &durationOfWorkOnTheTopic)!= 1) {
+            home();
+            error("Incorrect input. Try agian");
+            flush();
+            getchar();
+            cursor_to_xy(x + 32, y + 6);
+        }
+        flush();
+
+        cursor_to_xy(x + 11, y + 7);
+        while(scanf("%d", &jobCode) != 1) {
+            home();
+            error("Incorrect input. Try agian");
+            flush();
+            getchar();
+            cursor_to_xy(x + 1, y + 7);
+        }
+        flush();
+        set_keypress();
+        invisible_cursor();
+
+        ResearchWorker *tmp = CreateResearchWorker(departmentNumber, personnelNumber, jobCode, surname,  themeNumber, durationOfWorkOnTheTopic, salary);
+        *head = AddListElement(*head, tmp);
+    }
+}
+
+void write_dat_list_process(int width, int height, LinkedList **head) {
+    set_keypress();
+    invisible_cursor();
+    clrscr();
+    home();
+    char act;
+
+    while (1)
+    {
+        draw_dat_file_read_form(width, height);
+    }
+    
+
+
+}
+
+void write_txt_list_process(int width, int height, LinkedList **head) {
+    
 }
