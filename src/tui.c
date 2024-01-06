@@ -7,7 +7,7 @@
 #include "../inc/ResearchWorker.h"
 #include "../inc/utils.h"
 
-//Need to type [Enter] when use
+//Before use call set_keypress()
 void initialize_term_xy(int *x, int *y) {
 #ifdef _WIN32
     system("chcp 65001 > nul");
@@ -388,16 +388,16 @@ void print_menu(struct menu_t *menu) {
 }
 
 
-void menu_process(struct menu_t *menu, LinkedList *head) {
+void menu_process(struct menu_t *menu, LinkedList **head) {
     
     char act;
-    menu->chosen = -1;
+    menu->chosen = 0;
     
     do {
-        if (act == 106 && menu->chosen < menu->menu_size) { 
+        if (act == 106 && menu->chosen < menu->menu_size - 1) { 
             //J
             menu->chosen++;
-        } else if (act == 107 && menu->chosen >= 0) {
+        } else if (act == 107 && menu->chosen > 0) {
             //K
             menu->chosen--;
         } else if (act == 10) {
@@ -422,7 +422,7 @@ void menu_process(struct menu_t *menu, LinkedList *head) {
 }
 
 
-struct menu_t create_menu(char **menu_text, int menu_size, int (*menu_callback)(struct menu_t *, LinkedList *), int x, int y) {
+struct menu_t create_menu(char **menu_text, int menu_size, void (*menu_callback)(struct menu_t *, LinkedList **), int x, int y) {
     struct menu_t menu = {
         .menu_text = menu_text, 
         .menu_size = menu_size,
