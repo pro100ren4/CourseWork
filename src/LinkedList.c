@@ -107,6 +107,8 @@ LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumb
 #ifdef DEBUG
     message("DeleteListElement completed");
 #endif
+
+    return NULL;
 }
 
 LinkedList *CreateList(unsigned int length) {
@@ -159,6 +161,7 @@ void DeleteList(LinkedList *head) {
 #endif
 }
 
+//FIXME: Ссылаются на одно поле data
 LinkedList *ReadListFromFile(FILE *file, LinkedList *head) {
 #ifdef DEBUG
     home();
@@ -173,13 +176,17 @@ LinkedList *ReadListFromFile(FILE *file, LinkedList *head) {
 
     fseek(file, 0, SEEK_END);
     long file_length = ftell(file)/ResearchWorkerSize;
-    LinkedList* curr = NULL;
+    LinkedList* curr = head;
     ResearchWorker *tmp = (ResearchWorker *)malloc(ResearchWorkerSize);
     rewind(file);
     for(int i = 0;i < file_length; i++)
     {
-        LinkedList* node = (LinkedList*)malloc(LinkedListSize);
-        fread(&tmp, ResearchWorkerSize, 1, file);
+        LinkedList* node = (LinkedList*)malloc(LinkedListSize);        
+        if (fread(tmp, ResearchWorkerSize, 1, file) != 1) {
+            home();
+            error("Can't read list from file");
+            return NULL;
+        }
         node->data = tmp;
         node->next = NULL;
         node->prev = NULL;
@@ -217,11 +224,14 @@ int WriteListToFile(FILE *file, LinkedList *head) {
     if (head == NULL) {
         home();
         error("The list is empty");
-        return 0;
+        return -1;
     }
 
+    ResearchWorker *tmp = GetData(head);
+
     while (head != NULL) {
-        if (fwrite(head->data, ResearchWorkerSize, 1, file)!= 1) {
+        tmp = GetData(head);
+        if (fwrite(tmp, ResearchWorkerSize, 1, file)!= 1) {
             home();
             error("Can't write file");
             return -1;
@@ -239,7 +249,7 @@ int FindWorkerByPersonalNumber(LinkedList *head, unsigned long key) {
     int success = 0;
     int selected = 0;
     LinkedList *tmp = head;
-    while (tmp != NULL && GetPersonalNumber(GetData(tmp)) != key) {
+    while (GetNext(tmp) != NULL && GetPersonalNumber(GetData(tmp)) != key) {
         selected++;
         tmp = GetNext(tmp);
     }
