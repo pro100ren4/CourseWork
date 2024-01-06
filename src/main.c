@@ -19,6 +19,8 @@ void help_process(int width, int height);
 void read_dat_list_process(int width, int height, LinkedList **head);
 void read_txt_list_process(int width, int height, LinkedList **head);
 void read_con_list_process(int width, int height, LinkedList **head);
+void write_dat_list_process(int width, int height, LinkedList **head);
+void write_txt_list_process(int width, int height, LinkedList **head);
 LinkedList *console_input_process();
 
 
@@ -59,7 +61,7 @@ void foo(void) {
 }
 
 
-int callback_main(struct menu_t *menu, LinkedList *head) {
+void callback_main(struct menu_t *menu, LinkedList **head) {
     switch (menu->chosen)
     {
     case 0:
@@ -77,7 +79,7 @@ int callback_main(struct menu_t *menu, LinkedList *head) {
             getchar();
             break;
         }
-        table_process(width, height, head);
+        table_process(width, height, *head);
         break;
 
     case 3:
@@ -85,47 +87,44 @@ int callback_main(struct menu_t *menu, LinkedList *head) {
         break;
 
     case 4:
-        terminate_programm(0, head);
+        terminate_programm(0, *head);
         break;
 
     default:
         break;
     }
-    return 0;
 }
 
-int callback_input(struct menu_t *menu, LinkedList *head) {
+void callback_input(struct menu_t *menu, LinkedList **head) {
     switch (menu->chosen)
     {
     case 0:
-        read_con_list_process(width, height, &head);
+        read_con_list_process(width, height, head);
         break;
 
     case 1:
-        read_dat_list_process(width, height, &head);
+        read_dat_list_process(width, height, head);
         
         break;
 
     case 2:
-        read_txt_list_process(width, height, &head);
+        read_txt_list_process(width, height, head);
         break;
 
     default:
         break;
     } 
-
-    return 0;
 }
 
-int callback_output(struct menu_t *menu, LinkedList *head) {
+void callback_output(struct menu_t *menu, LinkedList **head) {
     switch (menu->chosen)
     {
     case 0:
-        foo();
+        write_dat_list_process(width, height, head); //foo();
         break;
 
     case 1:
-        foo();
+        write_txt_list_process(width, height, head); //foo();
         break;
 
     case 2:
@@ -135,8 +134,6 @@ int callback_output(struct menu_t *menu, LinkedList *head) {
     default:
         break;
     }  
-
-    return 0;
 }
 
 
@@ -202,7 +199,7 @@ int main(int argc, char const *argv[])
     //Основной цикл
     clrscr();
     draw_menu_form(width, height);
-    menu_process(&main_menu, head);
+    menu_process(&main_menu, &head);
 
 
     //Завершение программы
@@ -250,19 +247,19 @@ void correct_process(LinkedList *list) {
         act = getchar();
         switch (act)
         {
-        case 106: //J
+        case KEY_J: //J
             sel_field++;
             if (sel_field > 7)
                 sel_field = 7;
             break;
         
-        case 107://K
+        case KEY_K://K
             sel_field--;
             if (sel_field < 1)
                 sel_field = 1;
             break;
         
-        case 99:
+        case KEY_C:
             reset_keypress();
             if (sel_field == 1) {
                 cursor_to_xy((width - 48)/2 + 17, 5);
@@ -322,7 +319,7 @@ void table_process(int width, int height, LinkedList* head) {
     int pages = (list_size / (height - 7));
     int key = 0;
 
-    while (act != 120) {
+    while (act != KEY_X) {
         draw_table_form(width, height);
         list = print_linked_list_data(head, width, height, selected, page);
         cursor_to_xy(width-14, height-2);
@@ -334,18 +331,18 @@ void table_process(int width, int height, LinkedList* head) {
             help_process(width, height);
             break;
         
-        case 106: //J
+        case KEY_J: //J
             selected++;
             if (selected >= height - 7 && page < pages) {
                 selected = 0;
                 page++;
             } else if (selected >= height - 7 && page >= pages) {
-                selected = height - 7;
+                selected = height - 8;
                 page = pages;
             }
             break;
 
-        case 107: //K
+        case KEY_K: //K
             selected--;
             if (selected < 0 && page > 0) {
                 selected = height - 7;
@@ -356,15 +353,15 @@ void table_process(int width, int height, LinkedList* head) {
             }
             break;
 
-        case 99: //C
+        case KEY_C: //C
             correct_process(list);
             break;
         
-        case 115: //S
+        case KEY_S: //S
             head = SortListBySurname(head);
             break;
 
-        case 47: // /
+        case KEY_SLASH: // /
             reset_keypress();
             scanf("%d", &key);
             flush();
@@ -409,7 +406,7 @@ void help_process(int width, int height) {
         draw_help_form(width, height);
         act = getchar();
         switch (act) {
-        case 27:
+        case KEY_ESC:
             return;
             break;
 
@@ -449,7 +446,7 @@ void read_dat_list_process(int width, int height, LinkedList **head) {
         act = getchar();
         switch (act)
         {
-        case 10:
+        case KEY_ENTER:
             cursor_to_xy(x, y);
             visible_cursor();
             reset_keypress();
@@ -471,7 +468,7 @@ void read_dat_list_process(int width, int height, LinkedList **head) {
             return;
             break;
         
-        case 27:
+        case KEY_ESC:
             reset_keypress();
             visible_cursor();
             return;
@@ -499,7 +496,7 @@ void read_txt_list_process(int width, int height, LinkedList **head) {
         act = getchar();
         switch (act)
         {
-        case 10:
+        case KEY_ENTER:
             cursor_to_xy(x, y);
             visible_cursor();
             reset_keypress();
@@ -521,7 +518,7 @@ void read_txt_list_process(int width, int height, LinkedList **head) {
             return;
             break;
         
-        case 27:
+        case KEY_ESC:
             reset_keypress();
             visible_cursor();
             return;
@@ -640,7 +637,13 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         set_keypress();
         invisible_cursor();
 
-        ResearchWorker *tmp = CreateResearchWorker(departmentNumber, personnelNumber, jobCode, surname,  themeNumber, durationOfWorkOnTheTopic, salary);
+        ResearchWorker *tmp = CreateResearchWorker(departmentNumber, 
+                                                   personnelNumber, 
+                                                   jobCode, 
+                                                   surname,  
+                                                   themeNumber, 
+                                                   durationOfWorkOnTheTopic, 
+                                                   salary);
         *head = AddListElement(*head, tmp);
     }
 }
@@ -651,10 +654,53 @@ void write_dat_list_process(int width, int height, LinkedList **head) {
     clrscr();
     home();
     char act;
+    char filename[36];
+
+    int x = (width - 34)/2 + 1;
+    int y = 5;
 
     while (1)
     {
         draw_dat_file_read_form(width, height);
+        act = getchar();
+        switch (act)
+        {
+        case KEY_ENTER:
+            cursor_to_xy(x, y);
+            visible_cursor();
+            reset_keypress();
+            scanf("%s", filename);
+            flush();
+            strcat(filename, ".dat");
+            FILE *file = fopen(filename, "wb");
+            if (!file) {
+                home();
+                error("Can't open file");
+                head = NULL;
+                getchar();
+                return;
+            }
+            int ret = WriteListToFile(file, *head);
+
+            if (ret != 0) {
+                home();
+                error("Can't write list to file");
+                getchar();
+            }
+            fclose(file);
+            reset_keypress();
+            invisible_cursor();
+            break;
+        
+        case KEY_ESC:
+            reset_keypress();
+            visible_cursor();
+            return;
+            break;
+        
+        default:
+            break;
+        }
     }
     
 
@@ -662,5 +708,57 @@ void write_dat_list_process(int width, int height, LinkedList **head) {
 }
 
 void write_txt_list_process(int width, int height, LinkedList **head) {
-    
+    set_keypress();
+    invisible_cursor();
+    clrscr();
+    home();
+    char act;
+    char filename[36];
+
+    int x = (width - 34)/2 + 1;
+    int y = 5;
+
+    while (1)
+    {
+        draw_txt_file_read_form(width, height);
+        act = getchar();
+        switch (act)
+        {
+        case KEY_ENTER:
+            cursor_to_xy(x, y);
+            visible_cursor();
+            reset_keypress();
+            scanf("%s", filename);
+            flush();
+            strcat(filename, ".txt");
+            FILE *file = fopen(filename, "w");
+            if (!file) {
+                home();
+                error("Can't open file");
+                head = NULL;
+                getchar();
+                return;
+            }
+            int ret = WriteListToFile(file, *head);
+
+            if (ret != 0) {
+                home();
+                error("Can't write list to file");
+                getchar();
+            }
+            fclose(file);
+            reset_keypress();
+            invisible_cursor();
+            break;
+        
+        case KEY_ESC:
+            reset_keypress();
+            visible_cursor();
+            return;
+            break;
+        
+        default:
+            break;
+        }
+    }
 }
