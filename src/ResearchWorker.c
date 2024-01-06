@@ -120,7 +120,7 @@ ResearchWorker* CreateResearchWorkerFromConsole()
     double salary;
 
     printf("enter department number: ");
-    while(scanf("%d", &departmentNumber)!=1)
+    while(scanf("%ld", &departmentNumber)!=1)
     {
         flush();
         printf("[error] incorrect input. try again");
@@ -128,7 +128,7 @@ ResearchWorker* CreateResearchWorkerFromConsole()
     flush();
 
     printf("enter personnel number: ");
-    while(scanf("%d", &personnelNumber)!=1)
+    while(scanf("%ld", &personnelNumber)!=1)
     {
         flush();
         printf("[error] incorrect input. try again");
@@ -136,7 +136,7 @@ ResearchWorker* CreateResearchWorkerFromConsole()
     flush();
 
     printf("enter job code: ");
-    while(scanf("%d", &jobCode)!=1)
+    while(scanf("%ld", &jobCode)!=1)
     {
         flush();
         printf("[error] incorrect input. try again");
