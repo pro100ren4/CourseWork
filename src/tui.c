@@ -16,10 +16,6 @@ void initialize_term_xy(int *x, int *y) {
     scanf("\x1B[%d;%dR", x, y);
     clrscr();
     home();
-    // printf("Width: %d, Height: %d\n", term_width, term_height);
-    // *x = term_width;
-    // *y = term_height;
-    // system(PAUSE);
 }
 
 void flush() {
@@ -143,31 +139,31 @@ void draw_table_form(int width, int height) {
     printf("┐\n");  
 
 //  Second line
-    printf("│PN   ");
+    printf("│PN   "); //5
     for (int i = 0; i < wide; i++)
         printf(" ");
 
-    printf("│SURNAME             ");
+    printf("│SURNAME             "); //20
     for (int i = 0; i < wide + (width - 74)%7; i++)
         printf(" ");
     
-    printf("│DN      ");
+    printf("│DN      "); //8
     for (int i = 0; i < wide; i++) 
         printf(" ");
 
-    printf("│SALARY    ");
+    printf("│SALARY    "); //10
     for (int i = 0; i < wide; i++) 
         printf(" ");
 
-    printf("│THEME   ");
+    printf("│THEME   "); // 8
     for (int i = 0; i < wide; i++) 
         printf(" ");
 
-    printf("│DOF ");
+    printf("│DOF "); //4
     for (int i = 0; i < wide; i++) 
         printf(" ");
 
-    printf("│JC         ");
+    printf("│JC         "); //11
     for (int i = 0; i < wide; i++) 
         printf(" ");
 
@@ -232,7 +228,7 @@ void draw_table_form(int width, int height) {
     }
     printf("┘\n");
 
-    printf("%-*s", width, " KEYS:[h]help [x]exit [k]up [j]down [c]correct [s]sort [/]find");
+    printf("%-*s", width, " [h]help [ESC]exit [k/j]up/down [x]del [c]correct [s]sort [/]find [f]stat");
 
 }
 
@@ -281,6 +277,10 @@ void draw_menu_form(int x, int y) {
         printf("─");
     }
     printf("┘\n");
+    cursor_to_xy(x, y + 7)
+    printf("[k/j]up/down [Enter]confirm\n");
+    cursor_to_xy(x, y + 8)
+    printf("[ESC]back\n");
     visible_cursor();
     reset_keypress();
 }
@@ -298,24 +298,6 @@ void draw_menu_form(int x, int y) {
 // └────────────────────────────────────────┘0
 
 void draw_help_form(int width, int height) {
-    // int x = (width - 42)/2;
-    // int y = 4;
-    // char *CORRECT_FORM[] = {
-    //     "┌──────────────────HELP──────────────────┐",  
-    //     "│ [PN] - Personal Number                 │", 
-    //     "│ [SURNAME] - Surname                    │", 
-    //     "│ [DN] - Department number               │", 
-    //     "│ [SALARY] - Salary                      │", 
-    //     "│ [THEME] - Number of theme              │", 
-    //     "│ [DOF] - Duration of work on th theme   │", 
-    //     "│ [JC] - Job code                        │", 
-    //     "│                           Close[x]     │", 
-    //     "└────────────────────────────────────────┘"  
-    // };
-    // for (int i = 0; i < 10; i++) {
-    //     cursor_to_xy(x,y + i);
-    //     printf(CORRECT_FORM[i]);
-    // }
     printf("┌HELP");
     for (int i = 6; i < width; i++) {
         printf("─");
@@ -492,11 +474,10 @@ void draw_input_form(int width, int height, int selected) {
         "│Salary                                        │", 
         "│Theme                                         │", 
         "│Duration of work on the theme                 │", 
-        "│Job code                                      │", 
-        "│[Enter]Confirm [Esc]Next                      │", 
+        "│Job code                                      │",  
         "└──────────────────────────────────────────────┘"  
     };
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 9; i++) {
         if (selected > 0 && selected < 8 && i == selected) {
             set_display_atrib(REVERSE);
         }
@@ -512,7 +493,7 @@ void draw_dat_file_read_form(int width, int height) {
     char *FileNameForm[] = {
         "┌Enter─Dat─File─name─────────────┐",
         "│                                │",
-        "└[Enter/Esc]─────────────────────┘",
+        "└[Enter]Type─filenme─[Esc]Exit───┘",
         " Name must be <= 32ch!!           "
     };
     int x = (width - 34)/2;
@@ -528,7 +509,7 @@ void draw_txt_file_read_form(int width, int height) {
     char *FileNameForm[] = {
         "┌Enter─Txt─File─name─────────────┐",
         "│                                │",
-        "└[Enter/Esc]─────────────────────┘",
+        "└[Enter]Type─filenme─[Esc]Exit───┘",
         " Name must be <= 32ch!!           "
     };
     int x = (width - 34)/2;
@@ -543,7 +524,7 @@ void draw_enter_listsize_form(int width, int height) {
     char *FileNameForm[] = {
         "┌Enter─List─Size─────────────────┐",
         "│                                │",
-        "└[Enter/Esc]─────────────────────┘"
+        "└[Enter]Type─filenme─[Esc]Exit───┘"
     };
     int x = (width - 34)/2;
     int y = 4;
@@ -553,31 +534,17 @@ void draw_enter_listsize_form(int width, int height) {
     }
 }
 
+void draw_atterntion_form(int width, int height) {
+    char *AtterntionForm[] = {
+        "┌Attention───────────────────────────────────────────────────────┐",
+        "│                                                                │",
+        "└[Enter]OK─[Esc]CANCEL───────────────────────────────────────────┘"
+    };
+    int x = (width - 66)/2;
+    int y = 4;
+    for(int i = 0; i < 3; i++) {
+        cursor_to_xy(x, y + i);
+        printf("%s", AtterntionForm[i]);
+    }
+}
 
-// ResearchWorker *enter_worker_from_console(int width, int height) {
-//     set_keypress();
-//     invisible_cursor();
-//     ResearchWorker *new = (ResearchWorker *)malloc(ResearchWorkerSize);
-//     unsigned long departmentNumber, personnelNumber, jobCode;
-//     char surname[20];
-//     unsigned int themeNumber, durationOfWorkOnTheTopic;
-//     double salary;
-
-//     char act;
-//     while (act != 27)
-//     {
-//         draw_input_form(width, height, 0);
-//         act = getchar();
-//         switch (act)
-//         {
-//         case 10:
-//             cursor_to_xy(1, 1);
-//             scanf("%d", personnelNumber);
-//             break;
-        
-//         default:
-//             break;
-//         }
-//     }
-    
-// }
