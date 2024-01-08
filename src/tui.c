@@ -548,3 +548,24 @@ void draw_atterntion_form(int width, int height) {
     }
 }
 
+void draw_statistics_form(int width, int height) {
+    char *StatisticsForm[] = {
+        "┌Theme───|Workers───|Salary────────────────────┐",
+        "│                                              │",
+        "│                                              │",
+        "│                                              │",
+        "│                                              │",
+        "│                                              │",
+        "│                                              │",
+        "│                                              │",
+        "│                                              │",
+        "└TOTAL:   ─PAGE:   ─[k/j]next/prev─────────────┘"
+    };
+    int x = (width - 48)/2;
+    int y = 4;
+    for(int i = 0; i < 10; i++) {
+        cursor_to_xy(x, y + i);
+        printf("%s", StatisticsForm[i]);
+    }
+}
+

@@ -52,6 +52,7 @@ void draw_table_form(int width, int height);
 void draw_menu_form(int width, int height);
 void draw_help_form(int width, int height);
 void draw_atterntion_form(int width, int height);
+void draw_statistics_form(int width, int height);
 
 void set_keypress(void);
 void reset_keypress(void);

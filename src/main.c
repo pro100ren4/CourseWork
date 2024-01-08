@@ -841,11 +841,88 @@ void write_txt_list_process(int width, int height, LinkedList **head) {
     }
 }
 
+struct stat {
+    unsigned long theme;
+    unsigned long staff;
+    double fund;
+};
+
+#define STAT_INIT {0, 0, 0.0}
+
 void statistic_process(int width, int height, LinkedList **head) {
-    // set_keypress();
+    set_keypress();
     invisible_cursor();
-    clrscr();
     home();
     char act;
-         
+
+    int page = 0;
+    int x = (width - 48)/2 + 1;
+    int y = 5;
+
+    int list_size = 0;
+    int total = 0;
+
+    for (LinkedList *k = *head; k != NULL; k = GetNext(k))
+        list_size++;
+
+    struct stat  *statistics = (struct stat *)malloc(list_size * sizeof(struct stat));
+
+    //Зануляем массив тем
+    for (int i = 0; i < list_size; i++) {
+        statistics[i].theme = 0;
+        statistics[i].staff = 0;
+        statistics[i].fund = 0.0; 
+    }
+
+    for (LinkedList *i = head; i != NULL; i = GetNext(i)){
+        for (int j = 0; j < list_size; j++) {
+            if (GetThemeNumber(GetData(i)) == statistics[j].theme) {
+                statistics[j].staff++;
+                statistics[j].fund += GetSalary(GetData(i));
+                break;
+            } else if (statistics[j].theme == 0) {
+                statistics[j].theme = GetThemeNumber(GetData(i));
+                statistics[j].staff = 1;
+                statistics[j].fund = GetSalary(GetData(i));
+                break;
+            }
+        }
+    }
+
+    for (int i = 0; i < list_size || statistics[i].theme == 0; i++)total++;
+
+    int pages = total/8;
+
+    while (1)
+    {
+        draw_statistics_form(width, height);
+        for (int i = 0 ; i < 8; i++) {
+            cursor_to_xy(x, y + i);
+            printf("%-08d ", statistics[i + (8 * page)].theme);
+            printf("%-10d ", statistics[i + (8 * page)].staff);
+            printf("%10.2lf", statistics[i + (8 * page)].fund);
+        }
+        cursor_to_xy(x + 6, y + 9);
+        printf("%03d", total);
+        cursor_to_xy(x + 15, y + 9);
+        printf("%03d", page);
+        act = getchar();
+        switch (act)
+        {
+        case KEY_ESC:
+            free(statistics);  
+            statistics = NULL; 
+            return;
+
+        case KEY_K:
+            if (page > 0)
+                page--;
+            break;
+        
+        case KEY_J:
+            if (page < pages)
+                page++;
+        }
+    }
+    
 }
