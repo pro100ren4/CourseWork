@@ -21,7 +21,8 @@ void read_txt_list_process(int width, int height, LinkedList **head);
 void read_con_list_process(int width, int height, LinkedList **head);
 void write_dat_list_process(int width, int height, LinkedList **head);
 void write_txt_list_process(int width, int height, LinkedList **head);
-LinkedList *console_input_process();
+int atterntion_process(int width, int height, char attention[], size_t att_size);
+void statistic_process(int width, int height, LinkedList **head);
 
 
 
@@ -64,29 +65,30 @@ void foo(void) {
 void callback_main(struct menu_t *menu, LinkedList **head) {
     switch (menu->chosen)
     {
-    case 0:
+    case 0: // INPUT DATA
         menu_process(&(menu->subs[0]), head);
         break;
 
-    case 1:
+    case 1: // OUTPUT DATA
         menu_process(&(menu->subs[1]), head);
         break;
 
-    case 2:
-        if (!head) {
+    case 2: // TABLE MODE
+        if (!(*head)) {
             home();
-            error("list empty");
+            error("list empty\nPress [Enter]");
             getchar();
             break;
         }
         table_process(width, height, *head);
         break;
 
-    case 3:
-        foo();
+    case 3: // FREE MEMORY
+        DeleteList(*head);
+        *head = NULL;
         break;
 
-    case 4:
+    case 4: // EXIT
         terminate_programm(0, *head);
         break;
 
@@ -98,16 +100,34 @@ void callback_main(struct menu_t *menu, LinkedList **head) {
 void callback_input(struct menu_t *menu, LinkedList **head) {
     switch (menu->chosen)
     {
-    case 0:
+    case 0: // CONSOLE
+        if (*head != NULL) {
+            home();
+            error("list not empty\nPress [Enter]");
+            getchar();
+            break;
+        }
         read_con_list_process(width, height, head);
         break;
 
-    case 1:
+    case 1: // .DAT FILE
+        if (*head != NULL) {
+            home();
+            error("list not empty\nPress [Enter]");
+            getchar();
+            break;
+        }
         read_dat_list_process(width, height, head);
         
         break;
 
-    case 2:
+    case 2: // .TXT FILE
+        if (*head != NULL) {
+            home();
+            error("list not empty\nPress [Enter]");
+            getchar();
+            break;
+        }
         read_txt_list_process(width, height, head);
         break;
 
@@ -119,11 +139,23 @@ void callback_input(struct menu_t *menu, LinkedList **head) {
 void callback_output(struct menu_t *menu, LinkedList **head) {
     switch (menu->chosen)
     {
-    case 0:
+    case 0: // .DAT FILE
+        if (!(*head)) {
+            home();
+            error("List is empty\nPress [Enter]");
+            getchar();
+            break;
+        }
         write_dat_list_process(width, height, head); //foo();
         break;
 
-    case 1:
+    case 1: // .TXT FILE 
+        if (!(*head)) {
+            home();
+            error("List is empty\nPress [Enter]");
+            getchar();
+            break;
+        }
         write_txt_list_process(width, height, head); //foo();
         break;
 
@@ -136,7 +168,7 @@ void callback_output(struct menu_t *menu, LinkedList **head) {
     }  
 }
 
-
+struct menu_t main_menu, input_menu, output_menu;
 
 
 /*
@@ -175,19 +207,19 @@ int main(int argc, char const *argv[])
 
 
     //FIXME: Проверить на корректность памяти
-    struct menu_t main_menu = create_menu(main_menu_text, 
+    main_menu = create_menu(main_menu_text, 
                                           main_menu_size, 
                                           callback_main, 
                                           (width - 34)/2 + 1, 
                                           (height - 7)/2 + 1);
 
-    struct menu_t input_menu = create_menu(input_menu_text, 
+    input_menu = create_menu(input_menu_text, 
                                            input_menu_size, 
                                            callback_input, 
                                            (width - 34)/2 + 1, 
                                            (height - 7)/2 + 1);
 
-    struct menu_t output_menu = create_menu(output_menu_text, 
+    output_menu = create_menu(output_menu_text, 
                                             output_menu_size, 
                                             callback_output, 
                                             (width - 34)/2 + 1, 
@@ -203,14 +235,16 @@ int main(int argc, char const *argv[])
 
 
     //Завершение программы
-    reset_keypress();
-    visible_cursor();
+    terminate_programm(0, head);
 
-    DeleteList(head);
+    // reset_keypress();
+    // visible_cursor();
 
-    delete_menu(&output_menu);
-    delete_menu(&input_menu);
-    delete_menu(&main_menu);
+    // DeleteList(head);
+
+    // delete_menu(&output_menu);
+    // delete_menu(&input_menu);
+    // delete_menu(&main_menu);
 
     return 0;
 }
@@ -259,7 +293,7 @@ void correct_process(LinkedList *list) {
                 sel_field = 1;
             break;
         
-        case KEY_C:
+        case KEY_ENTER:
             reset_keypress();
             if (sel_field == 1) {
                 cursor_to_xy((width - 48)/2 + 17, 5);
@@ -319,7 +353,7 @@ void table_process(int width, int height, LinkedList* head) {
     int pages = (list_size / (height - 7));
     int key = 0;
 
-    while (act != KEY_X) {
+    while (act != KEY_ESC) {
         draw_table_form(width, height);
         list = print_linked_list_data(head, width, height, selected, page);
         cursor_to_xy(width-14, height-2);
@@ -371,6 +405,16 @@ void table_process(int width, int height, LinkedList* head) {
             set_keypress();
             break;
 
+        case KEY_X:
+            if (atterntion_process(width, height, "Do you want delete worker?", 1) == 1) {
+                head = DeleteListElement(head, GetPersonalNumber(GetData(list)));
+            }
+            break;
+
+        case KEY_F:
+            statistic_process(width, height, &head);
+            break;
+
         default:
             cursor_to_xy(2, height-2);
             printf("Wrong action");
@@ -384,15 +428,19 @@ void table_process(int width, int height, LinkedList* head) {
 }
 
 void terminate_programm(int exit_code, LinkedList *head) {
+    clrscr();
+    home();
     reset_keypress();
     visible_cursor();
 
-    DeleteList(head);
+    if (head)
+        DeleteList(head);
 
-    fclose(NULL); //FIXME: impliment 
-    // delete_menu(&output_menu);
-    // delete_menu(&input_menu);
-    // delete_menu(&main_menu); 
+    // fclose(NULL); //FIXME: impliment deleting menus
+    delete_menu(&output_menu);
+    delete_menu(&input_menu);
+    delete_menu(&main_menu); 
+
     exit(exit_code);
 }
 
@@ -424,8 +472,27 @@ void help_process(int width, int height) {
 //FIXME: Impliment
 int atterntion_process(int width, int height, char attention[], size_t att_size) {
     set_keypress();
-    clrscr();
     home();
+    int x = (width - 66)/2 + 1;
+    int y = 5;
+
+    char act;
+
+    while (1)
+    {
+        draw_atterntion_form(width, height);
+        cursor_to_xy(x, y);
+        printf("%64s", attention);
+        act = getchar();
+        switch (act)
+        {
+        case KEY_ENTER:
+            return 1;
+
+        case KEY_ESC:
+            return 0;
+        }
+    }
 
     return 0;
 }
@@ -548,15 +615,27 @@ void read_con_list_process(int width, int height, LinkedList **head) {
     int y = 4;
 
     draw_enter_listsize_form(width, height);
-    cursor_to_xy(x + 1, y + 1);
-    while(scanf("%d", &listsize) != 1) {
-        home();
-        error("Incorrect input. Try agian");
-        flush();
-        getchar();
+    act = getchar();
+    switch (act)
+    {
+    case KEY_ENTER:
         cursor_to_xy(x + 1, y + 1);
+        visible_cursor();
+        while(scanf("%d", &listsize) != 1) {
+            home();
+            error("Incorrect input. Try agian");
+            flush();
+            getchar();
+            cursor_to_xy(x + 1, y + 1);
+        }
+        flush();
+        invisible_cursor();
+        break;
+
+    case KEY_ESC:
+        return;
     }
-    flush();
+    
 
     x = (width - 48)/2;
 
@@ -665,7 +744,6 @@ void write_dat_list_process(int width, int height, LinkedList **head) {
         act = getchar();
         switch (act)
         {
-        case KEY_ENTER:
             cursor_to_xy(x, y);
             visible_cursor();
             reset_keypress();
@@ -761,4 +839,13 @@ void write_txt_list_process(int width, int height, LinkedList **head) {
             break;
         }
     }
+}
+
+void statistic_process(int width, int height, LinkedList **head) {
+    // set_keypress();
+    invisible_cursor();
+    clrscr();
+    home();
+    char act;
+         
 }
