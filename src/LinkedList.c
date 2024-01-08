@@ -95,20 +95,26 @@ LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumb
 #endif
     LinkedList *tmp = head;
     LinkedList *delNode;
+    int success = 0;
 
-    while(GetPersonalNumber(tmp->data) != workerPersonalNumber) 
+    while (GetPersonalNumber(tmp->data) != workerPersonalNumber && tmp != NULL) {
         tmp = tmp->next;
+    }
+    if (GetPersonalNumber(GetData(tmp)) == workerPersonalNumber)
+        success = 1; 
 
-    delNode = tmp;
-    tmp->next->prev = tmp->prev;  
-    tmp->prev->next = tmp->next;
-    free(delNode);
+    if (success) {
+        delNode = tmp;
+        tmp->next->prev = tmp->prev;  
+        tmp->prev->next = tmp->next;
+        free(delNode);
+    }
 
 #ifdef DEBUG
     message("DeleteListElement completed");
 #endif
 
-    return NULL;
+    return head;
 }
 
 LinkedList *CreateList(unsigned int length) {
@@ -177,10 +183,11 @@ LinkedList *ReadListFromFile(FILE *file, LinkedList *head) {
     fseek(file, 0, SEEK_END);
     long file_length = ftell(file)/ResearchWorkerSize;
     LinkedList* curr = head;
-    ResearchWorker *tmp = (ResearchWorker *)malloc(ResearchWorkerSize);
+    ResearchWorker *tmp;//= (ResearchWorker *)malloc(ResearchWorkerSize);
     rewind(file);
     for(int i = 0;i < file_length; i++)
     {
+        tmp = (ResearchWorker *)malloc(ResearchWorkerSize);
         LinkedList* node = (LinkedList*)malloc(LinkedListSize);        
         if (fread(tmp, ResearchWorkerSize, 1, file) != 1) {
             home();
@@ -242,6 +249,29 @@ int WriteListToFile(FILE *file, LinkedList *head) {
 }
 
 LinkedList *SortListBySurname(LinkedList *head) {
+    LinkedList *i = head, *j = head;
+    ResearchWorker *tmp;
+    int list_size = 0;
+
+    char *str1, *str2;
+
+    for (LinkedList *k = head; k != NULL; k = GetNext(k))
+        list_size++;
+    
+    for (i = head; i != NULL; i = GetNext(i)) {
+        for (j = head; GetNext(j) != NULL; j = GetNext(j)) {
+            str1 = GetSurname(GetData(j));
+            str2 = GetSurname(GetData(GetNext(j)));
+            if (strcmp(str1, str2) > 0) {
+                tmp = GetData(GetNext(j));
+                SetData(GetNext(j), GetData(j));
+                SetData(j, tmp);
+            }
+            free(str1);
+            free(str2);
+        }
+    }
+
     return head;
 }
 
