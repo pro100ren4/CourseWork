@@ -8,13 +8,12 @@
 #include "../inc/tui.h"
 #include "../inc/assertimp.h"
 
-#define DEBUG
+// #define DEBUG
 
-int height, width;
-// static LinkedList *head;
+static int height, width;
 
 void terminate_programm(int, LinkedList *);
-void table_process(int, int, LinkedList *);
+void table_process(int, int, LinkedList **);
 void help_process(int width, int height);
 void read_dat_list_process(int width, int height, LinkedList **head);
 void read_txt_list_process(int width, int height, LinkedList **head);
@@ -80,7 +79,7 @@ void callback_main(struct menu_t *menu, LinkedList **head) {
             getchar();
             break;
         }
-        table_process(width, height, *head);
+        table_process(width, height, head);
         break;
 
     case 3: // FREE MEMORY
@@ -146,7 +145,7 @@ void callback_output(struct menu_t *menu, LinkedList **head) {
             getchar();
             break;
         }
-        write_dat_list_process(width, height, head); //foo();
+        write_dat_list_process(width, height, head);
         break;
 
     case 1: // .TXT FILE 
@@ -156,7 +155,7 @@ void callback_output(struct menu_t *menu, LinkedList **head) {
             getchar();
             break;
         }
-        write_txt_list_process(width, height, head); //foo();
+        write_txt_list_process(width, height, head);
         break;
 
     case 2:
@@ -179,9 +178,6 @@ struct menu_t main_menu, input_menu, output_menu;
 
 int main(int argc, char const *argv[])
 {
-#ifdef DEBUG
-    //system("./test_utils");//TODO: Call tests
-#endif
     LinkedList *head = NULL;
 
     set_keypress();
@@ -190,9 +186,7 @@ int main(int argc, char const *argv[])
     home();
 
 
-    reset_keypress();
-    // head = CreateList(10);
-    // 
+    reset_keypress(); 
     clrscr();
     set_keypress();
     
@@ -236,15 +230,6 @@ int main(int argc, char const *argv[])
 
     //Завершение программы
     terminate_programm(0, head);
-
-    // reset_keypress();
-    // visible_cursor();
-
-    // DeleteList(head);
-
-    // delete_menu(&output_menu);
-    // delete_menu(&input_menu);
-    // delete_menu(&main_menu);
 
     return 0;
 }
@@ -339,7 +324,7 @@ void correct_process(LinkedList *list) {
     visible_cursor();
 }
 
-void table_process(int width, int height, LinkedList* head) {
+void table_process(int width, int height, LinkedList **head) {
     set_keypress();
     invisible_cursor();
 
@@ -347,7 +332,7 @@ void table_process(int width, int height, LinkedList* head) {
     int selected = 0;
     char act;
     int page = 0;
-    LinkedList *list, *sz = head;
+    LinkedList *list, *sz = *head;
     int list_size = 0;
     for (list_size = 0; sz != NULL; list_size++) sz = GetNext(sz);
     int pages = (list_size / (height - 7));
@@ -355,7 +340,7 @@ void table_process(int width, int height, LinkedList* head) {
 
     while (act != KEY_ESC) {
         draw_table_form(width, height);
-        list = print_linked_list_data(head, width, height, selected, page);
+        list = print_linked_list_data(*head, width, height, selected, page);
         cursor_to_xy(width-14, height-2);
         printf("SEL:%-2d", selected);
         cursor_to_xy(2, height-2);
@@ -392,14 +377,19 @@ void table_process(int width, int height, LinkedList* head) {
             break;
         
         case KEY_S: //S
-            head = SortListBySurname(head);
+            act = getchar();
+            if (act == 'g') {
+                *head = SortListBySurnameG(*head);
+            } else if (act == 'l') {
+                *head = SortListBySurnameL(*head);
+            }
             break;
 
         case KEY_SLASH: // /
             reset_keypress();
             scanf("%d", &key);
             flush();
-            key = FindWorkerByPersonalNumber(head, key);
+            key = FindWorkerByPersonalNumber(*head, key);
             selected = (key%(height - 7));
             page = key/(height-7);
             set_keypress();
@@ -407,12 +397,12 @@ void table_process(int width, int height, LinkedList* head) {
 
         case KEY_X:
             if (atterntion_process(width, height, "Do you want delete worker?", 1) == 1) {
-                head = DeleteListElement(head, GetPersonalNumber(GetData(list)));
+                *head = DeleteListElement(*head, GetPersonalNumber(GetData(list)));
             }
             break;
 
         case KEY_F:
-            statistic_process(width, height, &head);
+            statistic_process(width, height, head);
             break;
 
         default:
@@ -623,7 +613,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         visible_cursor();
         while(scanf("%d", &listsize) != 1) {
             home();
-            error("Incorrect input. Try agian");
+            error("Incorrect input. Try agian\nPress [Enter]");
             flush();
             getchar();
             cursor_to_xy(x + 1, y + 1);
@@ -646,7 +636,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         cursor_to_xy(x + 18, y + 1);
         while(scanf("%ld", &personnelNumber) != 1) {
             home();
-            error("Incorrect input. Try agian");
+            error("Incorrect input. Try agian\nPress [Enter]");
             flush();
             getchar();
             cursor_to_xy(x + 18, y + 1);
@@ -657,7 +647,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         cursor_to_xy(x + 10, y + 2);
         while(scanf("%s", surname)!= 1) {
             home();
-            error("Incorrect input. Try agian");
+            error("Incorrect input. Try agian\nPress [Enter]");
             flush();
             getchar();
             cursor_to_xy(x + 10, y + 2);
@@ -667,7 +657,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         cursor_to_xy(x + 20, y + 3);
         while(scanf("%ld", &departmentNumber)!= 1) {
             home();
-            error("Incorrect input. Try agian");
+            error("Incorrect input. Try agian\nPress [Enter]");
             flush();
             getchar();
             cursor_to_xy(x + 20, y + 3);
@@ -677,7 +667,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         cursor_to_xy(x + 9, y + 4);
         while(scanf("%lf", &salary)!= 1) {
             home();
-            error("Incorrect input. Try agian");
+            error("Incorrect input. Try agian\nPress [Enter]");
             flush();
             getchar();
             cursor_to_xy(x + 9, y + 4);
@@ -687,7 +677,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         cursor_to_xy(x + 8, y + 5);
         while(scanf("%d", &themeNumber)!= 1) {
             home();
-            error("Incorrect input. Try agian");
+            error("Incorrect input. Try agian\nPress [Enter]");
             flush();
             getchar();
             cursor_to_xy(x + 8, y + 5);
@@ -697,7 +687,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         cursor_to_xy(x + 32, y + 6);
         while(scanf("%d", &durationOfWorkOnTheTopic)!= 1) {
             home();
-            error("Incorrect input. Try agian");
+            error("Incorrect input. Try agian\nPress [Enter]");
             flush();
             getchar();
             cursor_to_xy(x + 32, y + 6);
@@ -707,7 +697,7 @@ void read_con_list_process(int width, int height, LinkedList **head) {
         cursor_to_xy(x + 11, y + 7);
         while(scanf("%ld", &jobCode) != 1) {
             home();
-            error("Incorrect input. Try agian");
+            error("Incorrect input. Try agian\nPress [Enter]");
             flush();
             getchar();
             cursor_to_xy(x + 1, y + 7);
@@ -744,6 +734,7 @@ void write_dat_list_process(int width, int height, LinkedList **head) {
         act = getchar();
         switch (act)
         {
+        case KEY_ENTER:
             cursor_to_xy(x, y);
             visible_cursor();
             reset_keypress();
@@ -874,7 +865,7 @@ void statistic_process(int width, int height, LinkedList **head) {
         statistics[i].fund = 0.0; 
     }
 
-    for (LinkedList *i = head; i != NULL; i = GetNext(i)){
+    for (LinkedList *i = *head; i != NULL; i = GetNext(i)){
         for (int j = 0; j < list_size; j++) {
             if (GetThemeNumber(GetData(i)) == statistics[j].theme) {
                 statistics[j].staff++;
@@ -889,22 +880,32 @@ void statistic_process(int width, int height, LinkedList **head) {
         }
     }
 
-    for (int i = 0; i < list_size || statistics[i].theme == 0; i++)total++;
+    for (int i = 0; (i < list_size) && (statistics[i].theme != 0); i++)total++;
 
     int pages = total/8;
 
     while (1)
     {
         draw_statistics_form(width, height);
-        for (int i = 0 ; i < 8; i++) {
-            cursor_to_xy(x, y + i);
-            printf("%-08d ", statistics[i + (8 * page)].theme);
-            printf("%-10d ", statistics[i + (8 * page)].staff);
-            printf("%10.2lf", statistics[i + (8 * page)].fund);
+        if (page != pages) {
+            for (int i = 0 ; i < 8; i++) {
+                cursor_to_xy(x, y + i);
+                printf("%-08d ", statistics[i + (8 * page)].theme);
+                printf("%-10d ", statistics[i + (8 * page)].staff);
+                printf("%10.2lf", statistics[i + (8 * page)].fund);
+            }
+        } else if (page == pages) {
+            for (int i = 0 ; i < total%8; i++) {
+                cursor_to_xy(x, y + i);
+                printf("%-08d ", statistics[i + (8 * page)].theme);
+                printf("%-10d ", statistics[i + (8 * page)].staff);
+                printf("%10.2lf", statistics[i + (8 * page)].fund);
+            }
         }
-        cursor_to_xy(x + 6, y + 9);
+        
+        cursor_to_xy(x + 6, y + 8);
         printf("%03d", total);
-        cursor_to_xy(x + 15, y + 9);
+        cursor_to_xy(x + 15, y + 8);
         printf("%03d", page);
         act = getchar();
         switch (act)

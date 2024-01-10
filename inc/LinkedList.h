@@ -1,7 +1,7 @@
 #ifndef _LINKEDLIST_LIST_H_
 #define _LINKEDLIST_LIST_H_
 
-#define DEBUG
+// #define DEBUG
 
 #include <stdio.h>
 
@@ -18,19 +18,19 @@ LinkedList *GetNext(LinkedList *list);
 LinkedList *GetPrev(LinkedList *list);
 ResearchWorker *GetData(LinkedList *list);
 
-// FIXME: Do normal function prototypes
-LinkedList *AddListElementByPersonalNumber(LinkedList *head, ResearchWorker *newResearchWorker, unsigned long workerPersonalNumber);
+//LinkedList *AddListElementByPersonalNumber(LinkedList *head, ResearchWorker *newResearchWorker, unsigned long workerPersonalNumber);
 LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker);
 LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumber);
 
-LinkedList *CreateList(unsigned int length);
+//LinkedList *CreateList(unsigned int length);
 void DeleteList(LinkedList *head);
 
 LinkedList *ReadListFromFile(FILE *file, LinkedList *head);
-LinkedList *ReadListFromFilePath(char *path, char *mode, LinkedList *head);
+//LinkedList *ReadListFromFilePath(char *path, char *mode, LinkedList *head);
 int WriteListToFile(FILE *file, LinkedList *head);
 
-LinkedList *SortListBySurname(LinkedList *head);
+LinkedList *SortListBySurnameG(LinkedList *head);
+LinkedList *SortListBySurnameL(LinkedList *head);
 
 int FindWorkerByPersonalNumber(LinkedList *head, unsigned long key); 
 

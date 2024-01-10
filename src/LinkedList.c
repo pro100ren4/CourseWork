@@ -73,7 +73,6 @@ LinkedList *AddListElement(LinkedList *head, ResearchWorker *newResearchWorker) 
         warning("List empty!");
         newNode->next = NULL;
         newNode->prev = NULL;
-        newNode->data = newResearchWorker;
         return newNode;
     }
 
@@ -93,6 +92,13 @@ LinkedList *DeleteListElement(LinkedList *head, unsigned long workerPersonalNumb
     home();
     message("Called DeleteListElement");
 #endif
+    if (GetPersonalNumber(GetData(head)) == workerPersonalNumber) {
+        LinkedList *tmp = GetNext(head);
+        SetPrev(tmp, NULL);
+        free(head);
+        return tmp;
+    }
+
     LinkedList *tmp = head;
     LinkedList *delNode;
     int success = 0;
@@ -167,7 +173,7 @@ void DeleteList(LinkedList *head) {
 #endif
 }
 
-//FIXME: Ссылаются на одно поле data
+
 LinkedList *ReadListFromFile(FILE *file, LinkedList *head) {
 #ifdef DEBUG
     home();
@@ -183,7 +189,7 @@ LinkedList *ReadListFromFile(FILE *file, LinkedList *head) {
     fseek(file, 0, SEEK_END);
     long file_length = ftell(file)/ResearchWorkerSize;
     LinkedList* curr = head;
-    ResearchWorker *tmp;//= (ResearchWorker *)malloc(ResearchWorkerSize);
+    ResearchWorker *tmp;
     rewind(file);
     for(int i = 0;i < file_length; i++)
     {
@@ -248,7 +254,7 @@ int WriteListToFile(FILE *file, LinkedList *head) {
     return 0;
 }
 
-LinkedList *SortListBySurname(LinkedList *head) {
+LinkedList *SortListBySurnameG(LinkedList *head) {
     LinkedList *i = head, *j = head;
     ResearchWorker *tmp;
     int list_size = 0;
@@ -263,6 +269,33 @@ LinkedList *SortListBySurname(LinkedList *head) {
             str1 = GetSurname(GetData(j));
             str2 = GetSurname(GetData(GetNext(j)));
             if (strcmp(str1, str2) > 0) {
+                tmp = GetData(GetNext(j));
+                SetData(GetNext(j), GetData(j));
+                SetData(j, tmp);
+            }
+            free(str1);
+            free(str2);
+        }
+    }
+
+    return head;
+}
+
+LinkedList *SortListBySurnameL(LinkedList *head) {
+    LinkedList *i = head, *j = head;
+    ResearchWorker *tmp;
+    int list_size = 0;
+
+    char *str1, *str2;
+
+    for (LinkedList *k = head; k != NULL; k = GetNext(k))
+        list_size++;
+    
+    for (i = head; i != NULL; i = GetNext(i)) {
+        for (j = head; GetNext(j) != NULL; j = GetNext(j)) {
+            str1 = GetSurname(GetData(j));
+            str2 = GetSurname(GetData(GetNext(j)));
+            if (strcmp(str1, str2) < 0) {
                 tmp = GetData(GetNext(j));
                 SetData(GetNext(j), GetData(j));
                 SetData(j, tmp);

@@ -68,7 +68,6 @@ void SetJobCode(ResearchWorker* const researchWorker, unsigned long jobCode)
 
 void SetSurname(ResearchWorker* const researchWorker, char surname[])
 {
-    //FIXME: impliment verification of surname
     strncpy(researchWorker->surname, surname, 19);
 }
 
